@@ -15,8 +15,7 @@ void AShooterAIController::BeginPlay()
 	if (AIBehavior != nullptr)
 	{
 		RunBehaviorTree(AIBehavior);
-
-		GetBlackboardComponent()->SetValueAsVector(TEXT("PlayerLocation"), PlayerPawn->GetActorLocation());
+		//set start location
 		GetBlackboardComponent()->SetValueAsVector(TEXT("StartLocation"), GetPawn()->GetActorLocation());
 	}
 }
@@ -25,16 +24,25 @@ void AShooterAIController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 	
-	//if (LineOfSightTo(PlayerPawn))
-	//{
-	//	//AI aim to us
-	//	SetFocus(PlayerPawn);
-	//	//AI move to us
-	//	MoveToActor(PlayerPawn, AcceptanceRadius);
-	//}
-	//else {
-	//	//AI stop focus us and stop move
-	//	ClearFocus(EAIFocusPriority::Gameplay);
-	//	StopMovement();
-	//}
+	if (LineOfSightTo(PlayerPawn))
+	{
+		//Setting playerlocation and lastknownplayerPosition
+		GetBlackboardComponent()->SetValueAsVector(TEXT("PlayerLocation"), PlayerPawn->GetActorLocation());
+		GetBlackboardComponent()->SetValueAsVector(TEXT("LastKnownPlayerLocation"), PlayerPawn->GetActorLocation());
+
+		//----------ai without bt-------------------------
+		//AI aim to us
+		//SetFocus(PlayerPawn);
+		//AI move to us
+		//MoveToActor(PlayerPawn, AcceptanceRadius);
+	}
+	else {
+		//clear player location
+		GetBlackboardComponent()->ClearValue(TEXT("PlayerLocation"));
+
+		//----------ai without bt-------------------------
+		//AI stop focus us and stop move
+		//ClearFocus(EAIFocusPriority::Gameplay);
+		//StopMovement();
+	}
 }
