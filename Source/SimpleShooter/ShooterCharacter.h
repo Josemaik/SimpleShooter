@@ -25,6 +25,9 @@ protected:
 public:	
 	UFUNCTION(BlueprintPure) // no tiene pin de ejecución, solo tiene impacto cuando se requiere su resultado
 	bool IsDead() const;
+
+	UFUNCTION(BlueprintPure)
+	float GetHealthPercent() const;
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

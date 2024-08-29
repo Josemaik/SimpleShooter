@@ -4,6 +4,7 @@
 #include "ShooterAIController.h"
 #include "Kismet/GameplayStatics.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "ShooterCharacter.h"
 
 void AShooterAIController::BeginPlay()
 {
@@ -24,25 +25,36 @@ void AShooterAIController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 	
-	if (LineOfSightTo(PlayerPawn))
-	{
+	//if (LineOfSightTo(PlayerPawn))
+	//{
 		//Setting playerlocation and lastknownplayerPosition
-		GetBlackboardComponent()->SetValueAsVector(TEXT("PlayerLocation"), PlayerPawn->GetActorLocation());
-		GetBlackboardComponent()->SetValueAsVector(TEXT("LastKnownPlayerLocation"), PlayerPawn->GetActorLocation());
+		//GetBlackboardComponent()->SetValueAsVector(TEXT("PlayerLocation"), PlayerPawn->GetActorLocation());
+		//GetBlackboardComponent()->SetValueAsVector(TEXT("LastKnownPlayerLocation"), PlayerPawn->GetActorLocation());
 
 		//----------ai without bt-------------------------
 		//AI aim to us
 		//SetFocus(PlayerPawn);
 		//AI move to us
 		//MoveToActor(PlayerPawn, AcceptanceRadius);
-	}
-	else {
+	//}
+	//else {
 		//clear player location
-		GetBlackboardComponent()->ClearValue(TEXT("PlayerLocation"));
+		//GetBlackboardComponent()->ClearValue(TEXT("PlayerLocation"));
 
 		//----------ai without bt-------------------------
 		//AI stop focus us and stop move
 		//ClearFocus(EAIFocusPriority::Gameplay);
 		//StopMovement();
+	//}
+}
+
+bool AShooterAIController::IsDead() const
+{
+	AShooterCharacter* ControlledCharacter = Cast<AShooterCharacter>(GetPawn());
+	if (ControlledCharacter != nullptr)
+	{
+		return ControlledCharacter->IsDead();
 	}
+
+	return true;
 }

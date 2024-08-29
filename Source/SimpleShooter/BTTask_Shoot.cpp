@@ -4,6 +4,7 @@
 #include "BTTask_Shoot.h"
 #include "AIController.h"
 #include "ShooterCharacter.h"
+#include "BehaviorTree/BlackboardComponent.h"
 
 UBTTask_Shoot::UBTTask_Shoot()
 {
@@ -26,6 +27,14 @@ EBTNodeResult::Type UBTTask_Shoot::ExecuteTask(UBehaviorTreeComponent& OwnerComp
 		return EBTNodeResult::Failed;
 	}
 
+	//Dont shoot when player is far away
+	APawn* Player = Cast<APawn>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(TEXT("Player")));
+	if (Player->GetDistanceTo(OwnerComp.GetAIOwner()->GetPawn()) > 700.f)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Está muy alejado"));
+		return EBTNodeResult::Failed;
+	}
+		
 	ShooterCharacter->Shoot();
 
 	return EBTNodeResult::Succeeded;
