@@ -16,6 +16,8 @@ public:
 	AGun();
 
 	void PullTrigger();
+	void ReloadAmmo();
+	void DecreaseAmmo() { if(CurrentAmmo > 0) --CurrentAmmo; }
 
 protected:
 	// Called when the game starts or when spawned
@@ -24,6 +26,12 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	
+	UFUNCTION(BlueprintPure)
+	int GetCurrentAmmo() const;
+
+	UFUNCTION(BlueprintPure)
+	int GetMaxAmmo() const;
 private:
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* Root;
@@ -49,6 +57,13 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	float Damage = 10;
+
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	int MaxAmmo = 15;
+
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	int CurrentAmmo = 15;
+
 
 	bool GunTrace(FHitResult& Hit, FVector& ShotDirection);
 	AController* GetOwnerController() const;	

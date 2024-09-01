@@ -39,27 +39,34 @@ void AGun::PullTrigger()
 {
 	//UE_LOG(LogTemp, Warning, TEXT("You've been shot"));
 	
-	//spawn shot effect
-	UGameplayStatics::SpawnEmitterAttached(MuzzleFlash, Mesh, TEXT("MuzzleFlashSocket"));
-	UGameplayStatics::SpawnSoundAttached(MuzzleSound, Mesh, TEXT("MuzzleFlashSocket"));
-
-	FHitResult Hit;
-	FVector ShotDirection;
-	bool bSuccess = GunTrace(Hit, ShotDirection);
-	if (bSuccess)
+	if (CurrentAmmo != 0)
 	{
-		UE_LOG(LogTemp, Display, TEXT("Sucess"));
-		//DrawDebugPoint(GetWorld(), Hit.Location, 20, FColor::Red, true);
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactEffect, Hit.Location, ShotDirection.Rotation());
-		UGameplayStatics::SpawnSoundAtLocation(GetWorld(),ImpactSound,Hit.Location);
-		//dealing damage
-		AActor* HitActor = Hit.GetActor();
-		if (HitActor != nullptr)
+
+		//spawn shot effect
+		UGameplayStatics::SpawnEmitterAttached(MuzzleFlash, Mesh, TEXT("MuzzleFlashSocket"));
+		UGameplayStatics::SpawnSoundAttached(MuzzleSound, Mesh, TEXT("MuzzleFlashSocket"));
+
+		FHitResult Hit;
+		FVector ShotDirection;
+		bool bSuccess = GunTrace(Hit, ShotDirection);
+		if (bSuccess)
 		{
-			FPointDamageEvent DamageEvent(Damage, Hit, ShotDirection, nullptr);
-			AController* OwnerController = GetOwnerController();
-			HitActor->TakeDamage(Damage, DamageEvent, OwnerController, this);
+			UE_LOG(LogTemp, Display, TEXT("Sucess"));
+			//DrawDebugPoint(GetWorld(), Hit.Location, 20, FColor::Red, true);
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactEffect, Hit.Location, ShotDirection.Rotation());
+			UGameplayStatics::SpawnSoundAtLocation(GetWorld(),ImpactSound,Hit.Location);
+			//dealing damage
+			AActor* HitActor = Hit.GetActor();
+			if (HitActor != nullptr)
+			{
+				FPointDamageEvent DamageEvent(Damage, Hit, ShotDirection, nullptr);
+				AController* OwnerController = GetOwnerController();
+				HitActor->TakeDamage(Damage, DamageEvent, OwnerController, this);
+			}
 		}
+
+		//Decrease Ammo
+		DecreaseAmmo();
 	}
 }
 
@@ -90,4 +97,27 @@ AController* AGun::GetOwnerController() const
 	APawn* OwnerPawn = Cast<APawn>(GetOwner());
 	if (OwnerPawn == nullptr) return nullptr;
 	return OwnerPawn->GetController();
+}
+
+int AGun::GetCurrentAmmo() const
+{
+	if (CurrentAmmo != 0)
+	{
+		return CurrentAmmo;
+	}
+	return 0;
+}
+
+int AGun::GetMaxAmmo() const
+{
+	if (MaxAmmo != 0)
+	{
+		return MaxAmmo;
+	}
+	return 0;
+}
+
+void AGun::ReloadAmmo()
+{
+	CurrentAmmo = MaxAmmo;
 }

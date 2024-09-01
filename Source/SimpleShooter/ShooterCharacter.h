@@ -28,6 +28,10 @@ public:
 
 	UFUNCTION(BlueprintPure)
 	float GetHealthPercent() const;
+
+
+	UFUNCTION(BlueprintPure)
+	AGun* GetCurrentGun() { if (Gun != nullptr) return Gun; else return nullptr; }
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -38,6 +42,7 @@ public:
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
 	void Shoot();
+	void Reload();
 private:
 	void MoveForward(float AxisValue);
 	void MoveRight(float AxisValue);
