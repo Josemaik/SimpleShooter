@@ -3,6 +3,7 @@
 
 #include "Gun.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
 #include "Engine/DamageEvents.h"
@@ -19,6 +20,8 @@ AGun::AGun()
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(Root);
 
+	SphereCollision = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere Collision"));
+	SphereCollision->SetupAttachment(Root);
 }
 
 // Called when the game starts or when spawned
@@ -34,10 +37,16 @@ void AGun::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
-
+void AGun::DestroySphereCollision()
+{
+	if (SphereCollision != nullptr)
+	{
+		SphereCollision->DestroyComponent();
+	}
+}
 void AGun::PullTrigger()
 {
-	//UE_LOG(LogTemp, Warning, TEXT("You've been shot"));
+	UE_LOG(LogTemp, Warning, TEXT("CurrentAmmo: %i"), CurrentAmmo);
 	
 	if (CurrentAmmo != 0)
 	{
@@ -67,6 +76,10 @@ void AGun::PullTrigger()
 
 		//Decrease Ammo
 		DecreaseAmmo();
+	}
+	else {
+		UE_LOG(LogTemp, Warning, TEXT("Sonido vacio"));
+		UGameplayStatics::SpawnSoundAttached(EmptyGunSound, Mesh, TEXT("MuzzleFlashSocket"));
 	}
 }
 

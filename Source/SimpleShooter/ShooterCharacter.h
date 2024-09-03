@@ -26,12 +26,15 @@ public:
 	UFUNCTION(BlueprintPure) // no tiene pin de ejecución, solo tiene impacto cuando se requiere su resultado
 	bool IsDead() const;
 
+	UFUNCTION(BlueprintPure) 
+	bool IsReloading() const;
+
 	UFUNCTION(BlueprintPure)
 	float GetHealthPercent() const;
 
 
 	UFUNCTION(BlueprintPure)
-	AGun* GetCurrentGun() { if (Gun != nullptr) return Gun; else return nullptr; }
+	AGun* GetCurrentGun();
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -40,15 +43,19 @@ public:
 
 	//take damage
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
-
+	
 	void Shoot();
 	void Reload();
+	void AddAmmo(class AGun* gun);
 private:
 	void MoveForward(float AxisValue);
 	void MoveRight(float AxisValue);
 	void LookUpRate(float AxisValue);
 	void LookRightRate(float AxisValue);
 
+	void Interact();
+	void PickUpGun(class AGun* gun);
+	void SwithGun();
 
 	UPROPERTY(EditAnywhere)
 	float Rotationrate = 10;
@@ -63,5 +70,10 @@ private:
 	TSubclassOf<AGun> GunClass;
 
 	UPROPERTY()
-	AGun* Gun;
+	AGun* PrimaryGun;
+
+	UPROPERTY()
+	AGun* SecondaryGun;
+
+	bool isreloading;
 };

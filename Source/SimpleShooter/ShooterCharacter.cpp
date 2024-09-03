@@ -4,6 +4,7 @@
 #include "ShooterCharacter.h"
 #include "Gun.h"
 #include "Components/CapsuleComponent.h"
+//#include "RotatingMovementComponent.generated.h"
 #include "SimpleShooterGameModeBase.h"
 // Sets default values
 AShooterCharacter::AShooterCharacter()
@@ -20,15 +21,18 @@ void AShooterCharacter::BeginPlay()
 
 	Health = MaxHealth;
 	
-	Gun = GetWorld()->SpawnActor<AGun>(GunClass);
 	GetMesh()->HideBoneByName(TEXT("weapon_r"), EPhysBodyOp::PBO_None);							
-	Gun->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("WeaponSocket"));
-	Gun->SetOwner(this);
+	PickUpGun(GetWorld()->SpawnActor<AGun>(GunClass));
 }
 
 bool AShooterCharacter::IsDead() const
 {
 	return Health <= 0;
+}
+
+bool AShooterCharacter::IsReloading() const
+{
+	return isreloading;
 }
 
 float AShooterCharacter::GetHealthPercent() const
@@ -59,6 +63,8 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction(TEXT("Shooting"), EInputEvent::IE_Pressed, this, &AShooterCharacter::Shoot);
 	PlayerInputComponent->BindAction(TEXT("Reloading"), EInputEvent::IE_Pressed, this, &AShooterCharacter::Reload);
+	PlayerInputComponent->BindAction(TEXT("Interact"), EInputEvent::IE_Pressed, this, &AShooterCharacter::Interact);
+	PlayerInputComponent->BindAction(TEXT("SwitchGun"), EInputEvent::IE_Pressed, this, &AShooterCharacter::SwithGun);
 }
 
 //pc input mappings
@@ -82,15 +88,68 @@ void AShooterCharacter::LookRightRate(float AxisValue)
 {
 	AddControllerYawInput(AxisValue * Rotationrate * GetWorld()->GetDeltaSeconds());
 }
+AGun* AShooterCharacter::GetCurrentGun()
+{
+	if (PrimaryGun != nullptr && PrimaryGun->ActorHasTag("Active"))
+	{
+		return PrimaryGun;
+	}
+	return SecondaryGun;
+}
 
 void AShooterCharacter::Shoot()
 {
-	Gun->PullTrigger();
+	if (PrimaryGun->ActorHasTag("Active"))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("rifle shooting"));
+		PrimaryGun->PullTrigger();
+	}
+	else {
+		UE_LOG(LogTemp, Warning, TEXT("EScopeta shooting"));
+		SecondaryGun->PullTrigger();
+	}
 }
 
 void AShooterCharacter::Reload()
 {
-	Gun->ReloadAmmo();
+	
+	FTimerHandle PlayerEnabledReload;
+	FTimerDelegate PlayerEnabledReloadDelegate;
+	bool canbecharged = false;
+	if (PrimaryGun->ActorHasTag("Active"))
+	{
+		if (PrimaryGun->CanbeCharged())
+		{
+			canbecharged = true;
+			PlayerEnabledReloadDelegate = FTimerDelegate::CreateUObject(
+				this,
+				&AShooterCharacter::AddAmmo,
+				PrimaryGun
+			);
+		}
+	}
+	else {
+		if (SecondaryGun->CanbeCharged())
+		{
+			canbecharged = true;
+			PlayerEnabledReloadDelegate = FTimerDelegate::CreateUObject(
+				this,
+				&AShooterCharacter::AddAmmo,
+				SecondaryGun
+			);
+		}
+	}
+
+	if (canbecharged)
+	{
+		GetWorldTimerManager().SetTimer(PlayerEnabledReload, PlayerEnabledReloadDelegate, 3, false);	
+		isreloading = true;
+	}
+}
+void AShooterCharacter::AddAmmo(AGun* gun)
+{
+	isreloading = false;
+	gun->ReloadAmmo();
 }
 
 float AShooterCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
@@ -111,4 +170,77 @@ float AShooterCharacter::TakeDamage(float DamageAmount, struct FDamageEvent cons
 		DetachFromControllerPendingDestroy();
 	}
 	return DamagetoApply;
+}
+void AShooterCharacter::PickUpGun(AGun* gun)
+{
+	if (PrimaryGun != nullptr)
+	{
+		//La primaria pasa a la Secundaria
+		PrimaryGun->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("secondaryGunSocket"));
+		PrimaryGun->Tags.Remove("Active");
+
+		//La secundaria pasa a ser la primaria
+		SecondaryGun = gun;
+		SecondaryGun->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("WeaponSocket"));
+		SecondaryGun->Tags.Add("Secondary");
+		SecondaryGun->SetOwner(this);
+		SecondaryGun->DestroySphereCollision();
+		//add maxAmmo
+		SecondaryGun->SetMaxAmmo(6);
+	}
+	else {
+		//first time you get weapon
+		PrimaryGun = gun;
+		PrimaryGun->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("WeaponSocket"));
+		PrimaryGun->DestroySphereCollision();
+		PrimaryGun->SetOwner(this);
+		PrimaryGun->Tags.Add("Active");
+		PrimaryGun->Tags.Add("Primary");
+	}
+}
+void AShooterCharacter::Interact()
+{
+	TArray<AActor*> Actors;
+	GetOverlappingActors(Actors);
+
+	if (Actors.Num() > 0)
+	{
+		FString Name = Actors[0]->GetActorNameOrLabel();
+		AActor* InteractableActor = Actors[0];
+		//ShotGun
+		if (InteractableActor->ActorHasTag("ShotGun"))
+		{
+			AGun* ShotGun = Cast<AGun>(InteractableActor);
+			
+			PickUpGun(ShotGun);
+		}
+		//Another
+	}
+
+	/*for (AActor* actor : Actors)
+	{
+
+	}*/
+}
+
+void AShooterCharacter::SwithGun()
+{
+	if (PrimaryGun && SecondaryGun)
+	{
+		if (PrimaryGun->ActorHasTag("Active"))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Rifle a Escopeta"));
+			PrimaryGun->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("secondaryGunSocket"));
+			SecondaryGun->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("WeaponSocket"));
+			//Gun -> remove tag
+			PrimaryGun->Tags.Remove("Active");
+		}
+		else {
+			UE_LOG(LogTemp, Warning, TEXT("Escopeta a Rifle"));
+			PrimaryGun->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("WeaponSocket"));
+			SecondaryGun->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("secondaryGunSocket"));
+			//Gun -> add tag
+			PrimaryGun->Tags.Add("Active");
+		}
+	}
 }

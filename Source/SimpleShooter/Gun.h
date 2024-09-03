@@ -32,12 +32,21 @@ public:
 
 	UFUNCTION(BlueprintPure)
 	int GetMaxAmmo() const;
+
+	void DestroySphereCollision(); 
+
+	bool CanbeCharged() const { return GetCurrentAmmo() < GetMaxAmmo(); }
+
+	void SetMaxAmmo(float maxamo) { MaxAmmo = CurrentAmmo = maxamo; }
 private:
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* Root;
 
 	UPROPERTY(VisibleAnywhere)
 	USkeletalMeshComponent* Mesh;
+
+	UPROPERTY(VisibleAnywhere)
+	class USphereComponent* SphereCollision;
 
 	UPROPERTY(EditAnywhere)
 	UParticleSystem* MuzzleFlash;
@@ -51,6 +60,9 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	USoundBase* ImpactSound;
+
+	UPROPERTY(EditAnywhere)
+	USoundBase* EmptyGunSound;
 
 	UPROPERTY(EditAnywhere)
 	float MaxRange = 1000;
