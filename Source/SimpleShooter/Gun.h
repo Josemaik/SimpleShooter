@@ -76,6 +76,9 @@ private:
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	int CurrentAmmo = 15;
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UUserWidget> HUDClass;
+	UUserWidget* HUD;
 
 	bool GunTrace(FHitResult& Hit, FVector& ShotDirection);
 	AController* GetOwnerController() const;	

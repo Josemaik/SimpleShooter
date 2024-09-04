@@ -30,6 +30,12 @@ public:
 	bool IsReloading() const;
 
 	UFUNCTION(BlueprintPure)
+	bool IsSwitching() const;
+
+	UFUNCTION(BlueprintPure)
+	bool IsPicking() const { return IsPickinggun; }
+
+	UFUNCTION(BlueprintPure)
 	float GetHealthPercent() const;
 
 
@@ -55,7 +61,9 @@ private:
 
 	void Interact();
 	void PickUpGun(class AGun* gun);
+	void ManagePickGun(AGun* gun);
 	void SwithGun();
+	void ManageSwithGun();
 
 	UPROPERTY(EditAnywhere)
 	float Rotationrate = 10;
@@ -76,4 +84,9 @@ private:
 	AGun* SecondaryGun;
 
 	bool isreloading;
+
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	bool IsSwitchinhgun;
+
+	bool IsPickinggun;
 };

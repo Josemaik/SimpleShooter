@@ -30,6 +30,6 @@ private:
 	float RestartDelay = 5;
 		
 	FTimerHandle RestartTimer;
-
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	UUserWidget* HUD;
 };

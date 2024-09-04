@@ -35,6 +35,11 @@ bool AShooterCharacter::IsReloading() const
 	return isreloading;
 }
 
+bool AShooterCharacter::IsSwitching() const
+{
+	return IsSwitchinhgun;
+}
+
 float AShooterCharacter::GetHealthPercent() const
 {
 	return Health / MaxHealth;
@@ -171,10 +176,18 @@ float AShooterCharacter::TakeDamage(float DamageAmount, struct FDamageEvent cons
 	}
 	return DamagetoApply;
 }
+void AShooterCharacter::ManagePickGun(AGun* gun)
+{
+	IsPickinggun = false;
+
+}
 void AShooterCharacter::PickUpGun(AGun* gun)
 {
 	if (PrimaryGun != nullptr)
 	{
+		IsPickinggun = true;
+
+		//
 		//La primaria pasa a la Secundaria
 		PrimaryGun->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("secondaryGunSocket"));
 		PrimaryGun->Tags.Remove("Active");
@@ -187,6 +200,15 @@ void AShooterCharacter::PickUpGun(AGun* gun)
 		SecondaryGun->DestroySphereCollision();
 		//add maxAmmo
 		SecondaryGun->SetMaxAmmo(6);
+		//
+		FTimerHandle PlayerEnabledSwitch;
+		FTimerDelegate PlayerEnabledSwitchDelegate;
+		PlayerEnabledSwitchDelegate = FTimerDelegate::CreateUObject(
+			this,
+			&AShooterCharacter::ManagePickGun,
+			gun
+		);
+		GetWorldTimerManager().SetTimer(PlayerEnabledSwitch, PlayerEnabledSwitchDelegate, 3.3, false);
 	}
 	else {
 		//first time you get weapon
@@ -222,25 +244,36 @@ void AShooterCharacter::Interact()
 
 	}*/
 }
-
+void AShooterCharacter::ManageSwithGun()
+{
+	IsSwitchinhgun = false;
+	if (PrimaryGun->ActorHasTag("Active"))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Rifle a Escopeta"));
+		PrimaryGun->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("secondaryGunSocket"));
+		SecondaryGun->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("WeaponSocket"));
+		//Gun -> remove tag
+		PrimaryGun->Tags.Remove("Active");
+	}
+	else {
+		UE_LOG(LogTemp, Warning, TEXT("Escopeta a Rifle"));
+		PrimaryGun->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("WeaponSocket"));
+		SecondaryGun->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("secondaryGunSocket"));
+		//Gun -> add tag
+		PrimaryGun->Tags.Add("Active");
+	}
+}
 void AShooterCharacter::SwithGun()
 {
 	if (PrimaryGun && SecondaryGun)
 	{
-		if (PrimaryGun->ActorHasTag("Active"))
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Rifle a Escopeta"));
-			PrimaryGun->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("secondaryGunSocket"));
-			SecondaryGun->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("WeaponSocket"));
-			//Gun -> remove tag
-			PrimaryGun->Tags.Remove("Active");
-		}
-		else {
-			UE_LOG(LogTemp, Warning, TEXT("Escopeta a Rifle"));
-			PrimaryGun->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("WeaponSocket"));
-			SecondaryGun->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("secondaryGunSocket"));
-			//Gun -> add tag
-			PrimaryGun->Tags.Add("Active");
-		}
+		FTimerHandle PlayerEnabledSwitch;
+		FTimerDelegate PlayerEnabledSwitchDelegate;
+		PlayerEnabledSwitchDelegate = FTimerDelegate::CreateUObject(
+			this,
+			&AShooterCharacter::ManageSwithGun
+		);
+		GetWorldTimerManager().SetTimer(PlayerEnabledSwitch, PlayerEnabledSwitchDelegate, 3.3, false);
+		IsSwitchinhgun = true;
 	}
 }
