@@ -36,11 +36,28 @@ public:
 	bool IsPicking() const { return IsPickinggun; }
 
 	UFUNCTION(BlueprintPure)
+	bool IsInteractingWithDoor() const { return interactdoor; }
+
+	UFUNCTION(BlueprintCallable)
+	void SetInteractDoor(bool value) { interactdoor = value; }
+
+	UFUNCTION(BlueprintPure)
 	float GetHealthPercent() const;
 
 
 	UFUNCTION(BlueprintPure)
 	AGun* GetCurrentGun();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void SwitchCam();
+
+	UFUNCTION(BlueprintCallable)
+	void HabilitarInput();
+
+	bool IsPasswordCorrect() const { return passwordintroduced; }
+
+	UFUNCTION(BlueprintCallable)
+	void SetPassword(bool value); 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -89,4 +106,14 @@ private:
 	bool IsSwitchinhgun;
 
 	bool IsPickinggun;
+
+	bool interactdoor;
+
+	bool passwordintroduced;
+
+	//Panel de password
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UUserWidget> PassWordPanelClass;
+
+	UUserWidget* PassWordPanel;
 };

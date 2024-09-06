@@ -10,6 +10,15 @@
 /**
  * 
  */
+
+UENUM(BlueprintType)
+enum class EnumTriggerType : uint8 {
+	Option1 UMETA(DisplayName = "Overlap"),
+	Option2 UMETA(DisplayName = "PickShotGun"),
+	Option3 UMETA(DisplayName = "PassWord")
+};
+
+
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class SIMPLESHOOTER_API UTriggerComponent : public UBoxComponent
 {
@@ -26,11 +35,16 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	void SetMover(UMover* Mover);
+
 private:
+
 	UPROPERTY(EditAnywhere)
 	FName AcceptableActorTag;
 
 	UMover* Mover;
 
 	AActor* GetAcceptableActor() const;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	EnumTriggerType TriggerType;
 };

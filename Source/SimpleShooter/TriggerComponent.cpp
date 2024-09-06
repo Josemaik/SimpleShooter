@@ -2,6 +2,8 @@
 
 
 #include "TriggerComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "ShooterCharacter.h"
 
 UTriggerComponent::UTriggerComponent()
 {
@@ -22,12 +24,38 @@ void UTriggerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 	{
 		return;
 	}
+	//UE_LOG(LogTemp, Warning, TEXT("Moverse"));
 
-	AActor* Actor = GetAcceptableActor();
-	if (Actor != nullptr)
+	switch (TriggerType)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Moverse"));
-		Mover->SetShouldMove(true);
+	case EnumTriggerType::Option1:
+	{
+		AActor* Actor = GetAcceptableActor();
+		if (Actor != nullptr)
+		{
+			Mover->SetShouldMove(true);
+		}
+	}
+		break;
+	case EnumTriggerType::Option2: {
+		AShooterCharacter* Player = Cast<AShooterCharacter>(UGameplayStatics::GetPlayerPawn(GetWorld(),0));
+		if (Player->IsPicking())
+		{
+			Mover->SetShouldMove(true);
+		}
+	}
+		break;
+	case EnumTriggerType::Option3:
+	{
+		AShooterCharacter* Player = Cast<AShooterCharacter>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+		if (Player->IsPasswordCorrect())
+		{
+			Mover->SetShouldMove(true);
+		}
+	}
+		break;
+	default:
+		break;
 	}
 	/*else {
 		UE_LOG(LogTemp, Warning, TEXT("No me muevo"));

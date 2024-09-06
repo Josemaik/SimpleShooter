@@ -6,6 +6,9 @@
 #include "Components/CapsuleComponent.h"
 //#include "RotatingMovementComponent.generated.h"
 #include "SimpleShooterGameModeBase.h"
+#include "Blueprint/UserWidget.h"
+#include "Kismet/GameplayStatics.h"
+#include "ShooterPlayerController.h"
 // Sets default values
 AShooterCharacter::AShooterCharacter()
 {
@@ -70,6 +73,7 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAction(TEXT("Reloading"), EInputEvent::IE_Pressed, this, &AShooterCharacter::Reload);
 	PlayerInputComponent->BindAction(TEXT("Interact"), EInputEvent::IE_Pressed, this, &AShooterCharacter::Interact);
 	PlayerInputComponent->BindAction(TEXT("SwitchGun"), EInputEvent::IE_Pressed, this, &AShooterCharacter::SwithGun);
+	PlayerInputComponent->BindAction(TEXT("SwitchCamera"), EInputEvent::IE_Pressed, this, &AShooterCharacter::SwitchCam);
 }
 
 //pc input mappings
@@ -236,6 +240,24 @@ void AShooterCharacter::Interact()
 			
 			PickUpGun(ShotGun);
 		}
+		if (InteractableActor->ActorHasTag("PassDoor"))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Interactuo con Puerta"));
+			interactdoor = true;
+			PassWordPanel = CreateWidget(GetWorld(), PassWordPanelClass);
+			if (PassWordPanel != nullptr)
+			{
+				//Añado el panel widget al viewport
+				PassWordPanel->AddToViewport();
+				// Deshabilito Input
+				APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+				APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+				PlayerPawn->DisableInput(PlayerController);
+				//Cambio cámara a primera persona
+				//SwitchCam();
+			}
+		}
+		
 		//Another
 	}
 
@@ -243,6 +265,17 @@ void AShooterCharacter::Interact()
 	{
 
 	}*/
+}
+void AShooterCharacter::HabilitarInput()
+{
+	APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	EnableInput(PlayerController);
+}
+
+void AShooterCharacter::SetPassword(bool value)
+{
+	passwordintroduced = value;
 }
 void AShooterCharacter::ManageSwithGun()
 {
