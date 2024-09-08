@@ -4,6 +4,7 @@
 #include "BTTask_Shoot.h"
 #include "AIController.h"
 #include "ShooterCharacter.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
 UBTTask_Shoot::UBTTask_Shoot()
@@ -26,6 +27,7 @@ EBTNodeResult::Type UBTTask_Shoot::ExecuteTask(UBehaviorTreeComponent& OwnerComp
 	{
 		return EBTNodeResult::Failed;
 	}
+	//ShooterCharacter->GetCharacterMovement()->MaxWalkSpeed = 600;
 
 	//Dont shoot when player is far away
 	APawn* Player = Cast<APawn>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(TEXT("Player")));

@@ -5,6 +5,9 @@
 #include "Kismet/GameplayStatics.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "ShooterCharacter.h"
+#include "Kismet/GameplayStatics.h"
+#include "GameFramework/Actor.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 void AShooterAIController::BeginPlay()
 {
@@ -18,13 +21,17 @@ void AShooterAIController::BeginPlay()
 		RunBehaviorTree(AIBehavior);
 		//set start location
 		GetBlackboardComponent()->SetValueAsVector(TEXT("StartLocation"), GetPawn()->GetActorLocation());
+		//Set velocity
+		GetBlackboardComponent()->SetValueAsFloat(TEXT("OriginalVelocity"), 600);
+		GetBlackboardComponent()->SetValueAsFloat(TEXT("PatrolVelocity"), 100);
+		//sel initial
+		GetBlackboardComponent()->SetValueAsVector(TEXT("NexPathPosition"), GetPawn()->GetActorLocation());
 	}
 }
 
 void AShooterAIController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	
 	//if (LineOfSightTo(PlayerPawn))
 	//{
 		//Setting playerlocation and lastknownplayerPosition
@@ -46,6 +53,28 @@ void AShooterAIController::Tick(float DeltaSeconds)
 		//ClearFocus(EAIFocusPriority::Gameplay);
 		//StopMovement();
 	//}
+	// Comprobar si el AI está en modo patrullaje
+	bool bIsPatrolling = GetBlackboardComponent()->GetValueAsBool(TEXT("IsPatroling"));
+	FString xd = bIsPatrolling ? "true" : "false";
+	UE_LOG(LogTemp, Display, TEXT("Patroling:%s"),*xd);
+	AShooterCharacter* ShooterCharacter = Cast<AShooterCharacter>(GetPawn());
+	if (ShooterCharacter)
+	{
+		if (bIsPatrolling)
+		{
+			UE_LOG(LogTemp, Display, TEXT("Patroling"));
+			// Cambiar la velocidad a la velocidad de patrullaje
+			float PatrolSpeed = GetBlackboardComponent()->GetValueAsFloat(TEXT("PatrolVelocity"));
+			ShooterCharacter->GetCharacterMovement()->MaxWalkSpeed = PatrolSpeed;
+		}
+		else
+		{
+			UE_LOG(LogTemp, Display, TEXT("Moving to shoot"));
+			// Cambiar la velocidad a la velocidad original
+			float OriginalSpeed = GetBlackboardComponent()->GetValueAsFloat(TEXT("OriginalVelocity"));
+			ShooterCharacter->GetCharacterMovement()->MaxWalkSpeed = OriginalSpeed;
+		}
+	}
 }
 
 bool AShooterAIController::IsDead() const

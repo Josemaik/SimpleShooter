@@ -39,7 +39,7 @@ void UTriggerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 		break;
 	case EnumTriggerType::Option2: {
 		AShooterCharacter* Player = Cast<AShooterCharacter>(UGameplayStatics::GetPlayerPawn(GetWorld(),0));
-		if (Player->IsPicking())
+		if (Player && Player->IsPicking())
 		{
 			Mover->SetShouldMove(true);
 		}
@@ -48,7 +48,7 @@ void UTriggerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 	case EnumTriggerType::Option3:
 	{
 		AShooterCharacter* Player = Cast<AShooterCharacter>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
-		if (Player->IsPasswordCorrect())
+		if (Player && Player->IsPasswordCorrect())
 		{
 			Mover->SetShouldMove(true);
 		}

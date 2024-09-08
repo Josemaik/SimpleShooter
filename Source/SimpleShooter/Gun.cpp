@@ -132,5 +132,21 @@ int AGun::GetMaxAmmo() const
 
 void AGun::ReloadAmmo()
 {
-	CurrentAmmo = MaxAmmo;
+	int AmmotobeReloaded = MaxAmmo - CurrentAmmo;
+	if(ReservedAmmo - AmmotobeReloaded < 0)
+	{
+		AmmotobeReloaded = ReservedAmmo;
+		ReservedAmmo = 0;
+	}
+	else {
+		ReservedAmmo -= AmmotobeReloaded;
+	}
+	
+	/*if (ReservedAmmo >= MaxAmmo)
+	{*/
+	CurrentAmmo += AmmotobeReloaded;
+	/*}
+	else {
+		CurrentAmmo += ReservedAmmo;
+	}*/
 }

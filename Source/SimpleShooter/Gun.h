@@ -33,11 +33,16 @@ public:
 	UFUNCTION(BlueprintPure)
 	int GetMaxAmmo() const;
 
+	UFUNCTION(BlueprintPure)
+	int GetReservedAmmo() const { return ReservedAmmo; }
+
 	void DestroySphereCollision(); 
 
-	bool CanbeCharged() const { return GetCurrentAmmo() < GetMaxAmmo(); }
+	bool CanbeCharged() const { return GetReservedAmmo() > 0; }
 
 	void SetMaxAmmo(float maxamo) { MaxAmmo = CurrentAmmo = maxamo; }
+
+	void SetReservedAmmo(float newreservedammo) { ReservedAmmo = newreservedammo; }
 private:
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* Root;
@@ -75,6 +80,9 @@ private:
 
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	int CurrentAmmo = 15;
+
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	int ReservedAmmo = 120;
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UUserWidget> HUDClass;

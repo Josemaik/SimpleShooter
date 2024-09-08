@@ -44,6 +44,9 @@ public:
 	UFUNCTION(BlueprintPure)
 	float GetHealthPercent() const;
 
+	UFUNCTION(BlueprintPure)
+	float GetHealth() const { return Health; }
+
 
 	UFUNCTION(BlueprintPure)
 	AGun* GetCurrentGun();
@@ -58,6 +61,14 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetPassword(bool value); 
+
+	TArray<FVector> GetPath() const { return Path; }
+
+	/*UFUNCTION(BlueprintCallable)
+	AActor* GetPath() const { if (Path) return Path; return nullptr; }*/
+
+	/*UFUNCTION(BlueprintImplementableEvent)
+	void StartMoving();*/
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -116,4 +127,13 @@ private:
 	TSubclassOf<class UUserWidget> PassWordPanelClass;
 
 	UUserWidget* PassWordPanel;
+
+	/*UPROPERTY(EditAnywhere)
+	FName Path_name;
+
+	UPROPERTY(EditAnywhere)
+	AActor* Path;*/
+
+	UPROPERTY(EditAnywhere)
+	TArray<FVector> Path;
 };

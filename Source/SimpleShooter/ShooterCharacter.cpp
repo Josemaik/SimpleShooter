@@ -9,6 +9,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "ShooterPlayerController.h"
+#include "Path.h"
 // Sets default values
 AShooterCharacter::AShooterCharacter()
 {
@@ -26,6 +27,22 @@ void AShooterCharacter::BeginPlay()
 	
 	GetMesh()->HideBoneByName(TEXT("weapon_r"), EPhysBodyOp::PBO_None);							
 	PickUpGun(GetWorld()->SpawnActor<AGun>(GunClass));
+
+	//path
+	/*if (!Path_name.ToString().IsEmpty())
+	{
+		TArray<AActor*> FoundActors;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor::StaticClass(), FoundActors);
+		for (AActor* Actor : FoundActors)
+		{
+			if (Actor->ActorHasTag(Path_name))
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Actor encontrado"));
+				Path = Actor;
+				break;
+			}
+		}
+	}*/
 }
 
 bool AShooterCharacter::IsDead() const
@@ -204,6 +221,7 @@ void AShooterCharacter::PickUpGun(AGun* gun)
 		SecondaryGun->DestroySphereCollision();
 		//add maxAmmo
 		SecondaryGun->SetMaxAmmo(6);
+		SecondaryGun->SetReservedAmmo(45);
 		//
 		FTimerHandle PlayerEnabledSwitch;
 		FTimerDelegate PlayerEnabledSwitchDelegate;
