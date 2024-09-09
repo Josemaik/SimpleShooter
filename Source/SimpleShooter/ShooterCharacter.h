@@ -36,6 +36,11 @@ public:
 	bool IsPicking() const { return IsPickinggun; }
 
 	UFUNCTION(BlueprintPure)
+	bool GetSpawning() const { return spawning; }
+
+	void EndSpawnAnimation() { spawning = false; }
+
+	UFUNCTION(BlueprintPure)
 	bool IsInteractingWithDoor() const { return interactdoor; }
 
 	UFUNCTION(BlueprintCallable)
@@ -46,6 +51,8 @@ public:
 
 	UFUNCTION(BlueprintPure)
 	float GetHealth() const { return Health; }
+
+	void SetHealth(float newhealth) { Health = newhealth; }
 
 
 	UFUNCTION(BlueprintPure)
@@ -81,6 +88,13 @@ public:
 	void Shoot();
 	void Reload();
 	void AddAmmo(class AGun* gun);
+	UFUNCTION(BlueprintImplementableEvent)
+	void DeleteCurePotion(int newcurrentpotion);
+
+	void RespawnCheckpoint();
+
+	UPROPERTY(BlueprintReadWrite)
+	FTransform CurrentCheckpoint;
 private:
 	void MoveForward(float AxisValue);
 	void MoveRight(float AxisValue);
@@ -92,6 +106,11 @@ private:
 	void ManagePickGun(AGun* gun);
 	void SwithGun();
 	void ManageSwithGun();
+	void Heal();
+	void HealStep();
+	void AddLife() { ++Health; }
+
+	
 
 	UPROPERTY(EditAnywhere)
 	float Rotationrate = 10;
@@ -101,6 +120,11 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	float Health;
+
+	FTimerHandle PlayerHealTimerHandle;
+	int TotalLifeToCure = 30;
+	int MaxCurePotions = 3;
+	int currentpotion = 0;
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AGun> GunClass;
@@ -122,6 +146,10 @@ private:
 
 	bool passwordintroduced;
 
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	bool healing;
+
+	bool spawning;
 	//Panel de password
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UUserWidget> PassWordPanelClass;

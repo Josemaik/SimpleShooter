@@ -21,7 +21,8 @@ protected:
 	virtual void BeginPlay() override;
 private:
 	//player
-	APawn* PlayerPawn;
+	//APawn* PlayePawn;
+	class AShooterCharacter* PlayerPawn;
 	//detection radius
 	//UPROPERTY(EditAnywhere)
 	//float AcceptanceRadius = 200;

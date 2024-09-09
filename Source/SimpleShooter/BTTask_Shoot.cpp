@@ -33,7 +33,7 @@ EBTNodeResult::Type UBTTask_Shoot::ExecuteTask(UBehaviorTreeComponent& OwnerComp
 	APawn* Player = Cast<APawn>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(TEXT("Player")));
 	if (Player->GetDistanceTo(OwnerComp.GetAIOwner()->GetPawn()) > 700.f)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Está muy alejado"));
+		//UE_LOG(LogTemp, Warning, TEXT("Está muy alejado"));
 		return EBTNodeResult::Failed;
 	}
 		

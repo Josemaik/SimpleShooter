@@ -18,6 +18,8 @@ public:
 protected:
 	virtual void BeginPlay();
 private:
+	void Respawn();
+
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UUserWidget> HUDClass;
 	UPROPERTY(EditAnywhere)
@@ -27,9 +29,11 @@ private:
 	TSubclassOf<class UUserWidget> WinScreenClass;
 
 	UPROPERTY(EditAnywhere)
-	float RestartDelay = 5;
+	float RestartDelay = 6;
 		
 	FTimerHandle RestartTimer;
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	UUserWidget* HUD;
+
+	UUserWidget* LoseScreen;
 };

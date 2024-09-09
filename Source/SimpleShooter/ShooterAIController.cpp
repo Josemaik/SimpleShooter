@@ -13,8 +13,8 @@ void AShooterAIController::BeginPlay()
 {
 	Super::BeginPlay();
 	//initialice player
-	PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-
+	//PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+	PlayerPawn = Cast<AShooterCharacter>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 	//run behavuourTree
 	if (AIBehavior != nullptr)
 	{
@@ -56,20 +56,28 @@ void AShooterAIController::Tick(float DeltaSeconds)
 	// Comprobar si el AI está en modo patrullaje
 	bool bIsPatrolling = GetBlackboardComponent()->GetValueAsBool(TEXT("IsPatroling"));
 	FString xd = bIsPatrolling ? "true" : "false";
-	UE_LOG(LogTemp, Display, TEXT("Patroling:%s"),*xd);
+	//UE_LOG(LogTemp, Display, TEXT("Patroling:%s"),*xd);
 	AShooterCharacter* ShooterCharacter = Cast<AShooterCharacter>(GetPawn());
 	if (ShooterCharacter)
 	{
+		if (PlayerPawn->IsDead())
+		{
+			GetBlackboardComponent()->ClearValue(TEXT("IsPlayerDead"));
+		}
+		else {
+			GetBlackboardComponent()->SetValueAsBool(TEXT("IsPlayerDead"), true);
+		}
+
 		if (bIsPatrolling)
 		{
-			UE_LOG(LogTemp, Display, TEXT("Patroling"));
+			//UE_LOG(LogTemp, Display, TEXT("Patroling"));
 			// Cambiar la velocidad a la velocidad de patrullaje
 			float PatrolSpeed = GetBlackboardComponent()->GetValueAsFloat(TEXT("PatrolVelocity"));
 			ShooterCharacter->GetCharacterMovement()->MaxWalkSpeed = PatrolSpeed;
 		}
 		else
 		{
-			UE_LOG(LogTemp, Display, TEXT("Moving to shoot"));
+			//UE_LOG(LogTemp, Display, TEXT("Moving to shoot"));
 			// Cambiar la velocidad a la velocidad original
 			float OriginalSpeed = GetBlackboardComponent()->GetValueAsFloat(TEXT("OriginalVelocity"));
 			ShooterCharacter->GetCharacterMovement()->MaxWalkSpeed = OriginalSpeed;

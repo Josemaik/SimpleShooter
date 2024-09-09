@@ -10,6 +10,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "ShooterPlayerController.h"
 #include "Path.h"
+#include "Components/SphereComponent.h"
 // Sets default values
 AShooterCharacter::AShooterCharacter()
 {
@@ -91,6 +92,7 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAction(TEXT("Interact"), EInputEvent::IE_Pressed, this, &AShooterCharacter::Interact);
 	PlayerInputComponent->BindAction(TEXT("SwitchGun"), EInputEvent::IE_Pressed, this, &AShooterCharacter::SwithGun);
 	PlayerInputComponent->BindAction(TEXT("SwitchCamera"), EInputEvent::IE_Pressed, this, &AShooterCharacter::SwitchCam);
+	PlayerInputComponent->BindAction(TEXT("Heal"), EInputEvent::IE_Pressed, this, &AShooterCharacter::Heal);
 }
 
 //pc input mappings
@@ -121,6 +123,49 @@ AGun* AShooterCharacter::GetCurrentGun()
 		return PrimaryGun;
 	}
 	return SecondaryGun;
+}
+
+void AShooterCharacter::Heal()
+{
+	// Vida que se va a curar en total
+	if (currentpotion < MaxCurePotions && Health < MaxHealth)
+	{
+		healing = true;
+
+		TotalLifeToCure = 30;
+
+		DeleteCurePotion(currentpotion);
+		currentpotion++;
+
+		// Configura un temporizador para curar cada 0.5 segundos
+		FTimerDelegate PlayerHealDelegate = FTimerDelegate::CreateUObject(
+			this,
+			&AShooterCharacter::HealStep
+		);
+
+		GetWorldTimerManager().SetTimer(PlayerHealTimerHandle, PlayerHealDelegate, 0.5f, true);
+	}
+}
+
+void AShooterCharacter::HealStep()
+{
+	// Define cuánta vida vas a curar por tick
+	int32 LifePerTick = 1;
+
+	// Si el jugador está completamente curado o ya curamos todo el LifeToCure
+	if (Health >= 100 || TotalLifeToCure <= 0)
+	{
+		// Limpiar el temporizador cuando termine la curación
+		GetWorldTimerManager().ClearTimer(PlayerHealTimerHandle);
+		healing = false;
+		return;
+	}
+
+	// Curar al jugador
+	AddLife();
+
+	// Restar la cantidad curada de la cantidad total a curar
+	TotalLifeToCure -= LifePerTick;
 }
 
 void AShooterCharacter::Shoot()
@@ -192,8 +237,44 @@ float AShooterCharacter::TakeDamage(float DamageAmount, struct FDamageEvent cons
 		{
 			GameMode->PawnKilled(this);
 		}
-		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		DetachFromControllerPendingDestroy();
+		if (!this->ActorHasTag("Player"))
+		{
+			//AI
+			GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			DetachFromControllerPendingDestroy();
+		}
+		//if (PrimaryGun)
+		//{
+			/*PrimaryGun->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+			PrimaryGun->*/
+		//	USphereComponent* PhysicsSphere = NewObject<USphereComponent>(PrimaryGun);
+		//	if (PhysicsSphere)
+		//	{
+		//		// Adjuntar el SphereComponent al PrimaryGun como RootComponent o al mesh si es necesario
+		//		PhysicsSphere->AttachToComponent(PrimaryGun->GetRootComponent(), FAttachmentTransformRules::KeepWorldTransform);
+
+		//		// Configurar el tamaño del SphereComponent (radio)
+		//		PhysicsSphere->SetSphereRadius(30.0f);  // Ajusta el tamaño del radio según lo que necesites
+
+		//		// Habilitar la colisión para física
+		//		PhysicsSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+
+		//		// Configurar el tipo de colisión (por ejemplo, bloquear todo)
+		//		PhysicsSphere->SetCollisionObjectType(ECollisionChannel::ECC_PhysicsBody);
+		//		PhysicsSphere->SetCollisionResponseToAllChannels(ECR_Block);  // Bloquea colisiones con todo
+
+		//		// Agregar el componente al sistema de actores
+		//		PhysicsSphere->RegisterComponent();
+
+		//		// Habilitar la simulación de físicas
+		//		PhysicsSphere->SetSimulatePhysics(true);
+		//	}
+		//}
+		//if(SecondaryGun)
+		//{
+		//	SecondaryGun->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+		//}
+
 	}
 	return DamagetoApply;
 }
@@ -327,4 +408,26 @@ void AShooterCharacter::SwithGun()
 		GetWorldTimerManager().SetTimer(PlayerEnabledSwitch, PlayerEnabledSwitchDelegate, 3.3, false);
 		IsSwitchinhgun = true;
 	}
+}
+
+void AShooterCharacter::RespawnCheckpoint()
+{
+	//FRotator DesiredRotation = FRotator(0.0f, -90.0f, 0.0f);  // Esto hará que el Pawn mire hacia el eje Y positivo.
+
+	// Aplica la rotación deseada al transform del checkpoint
+	//CurrentCheckpoint.SetRotation(DesiredRotation.Quaternion());
+
+	UE_LOG(LogTemp, Warning, TEXT("Checkpoint Transform: %s"), *CurrentCheckpoint.ToString());
+	SetActorTransform(CurrentCheckpoint);
+	
+	AController* PlayerController = GetController();
+	if (PlayerController)
+	{
+		PlayerController->SetControlRotation(CurrentCheckpoint.GetRotation().Rotator());  // Cambia la rotación del controlador
+	}
+
+	spawning = true;
+
+	FTimerHandle SpawnAnim;
+	GetWorldTimerManager().SetTimer(SpawnAnim, this, &AShooterCharacter::EndSpawnAnimation, 5);
 }
