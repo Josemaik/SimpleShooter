@@ -15,6 +15,12 @@ class SIMPLESHOOTER_API AKillEmAllGameMode : public ASimpleShooterGameModeBase
 	GENERATED_BODY()
 public:
 	virtual void PawnKilled(APawn* PawnKilled) override;
+
+	UPROPERTY(BlueprintReadOnly)
+	bool AllEnemiesDead = false;
+
 private:
+
+	UFUNCTION(BlueprintCallable)
 	void EndGame(bool bisPlayerWinner);
 };

@@ -36,6 +36,9 @@ public:
 	bool IsPicking() const { return IsPickinggun; }
 
 	UFUNCTION(BlueprintPure)
+	bool IsCrounch() const { return crounch; }
+
+	UFUNCTION(BlueprintPure)
 	bool GetSpawning() const { return spawning; }
 
 	void EndSpawnAnimation() { spawning = false; }
@@ -91,6 +94,10 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void DeleteCurePotion(int newcurrentpotion);
 
+	UFUNCTION(BlueprintImplementableEvent,BlueprintCallable)
+	void NewMision(FName newcurrentpotion);
+
+
 	void RespawnCheckpoint();
 
 	UPROPERTY(BlueprintReadWrite)
@@ -100,6 +107,7 @@ private:
 	void MoveRight(float AxisValue);
 	void LookUpRate(float AxisValue);
 	void LookRightRate(float AxisValue);
+	void Crounch();
 
 	void Interact();
 	void PickUpGun(class AGun* gun);
@@ -150,6 +158,8 @@ private:
 	bool healing;
 
 	bool spawning;
+
+	bool crounch;
 	//Panel de password
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UUserWidget> PassWordPanelClass;

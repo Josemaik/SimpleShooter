@@ -93,12 +93,13 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAction(TEXT("SwitchGun"), EInputEvent::IE_Pressed, this, &AShooterCharacter::SwithGun);
 	PlayerInputComponent->BindAction(TEXT("SwitchCamera"), EInputEvent::IE_Pressed, this, &AShooterCharacter::SwitchCam);
 	PlayerInputComponent->BindAction(TEXT("Heal"), EInputEvent::IE_Pressed, this, &AShooterCharacter::Heal);
+	PlayerInputComponent->BindAction(TEXT("Crounch"), EInputEvent::IE_Pressed, this, &AShooterCharacter::Crounch);
 }
 
 //pc input mappings
 void AShooterCharacter::MoveForward(float AxisValue)
 {
-	AddMovementInput(GetActorForwardVector() * AxisValue);
+	AddMovementInput(GetActorForwardVector() * AxisValue); 
 }
 
 void AShooterCharacter::MoveRight(float AxisValue)
@@ -116,6 +117,12 @@ void AShooterCharacter::LookRightRate(float AxisValue)
 {
 	AddControllerYawInput(AxisValue * Rotationrate * GetWorld()->GetDeltaSeconds());
 }
+void AShooterCharacter::Crounch()
+{
+	UE_LOG(LogTemp, Display, TEXT("Me agacho"));
+	crounch = !crounch;
+}
+
 AGun* AShooterCharacter::GetCurrentGun()
 {
 	if (PrimaryGun != nullptr && PrimaryGun->ActorHasTag("Active"))

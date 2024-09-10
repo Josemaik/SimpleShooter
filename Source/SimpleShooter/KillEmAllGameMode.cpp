@@ -5,6 +5,8 @@
 #include "EngineUtils.h"
 #include "GameFramework/Controller.h"
 #include "ShooterAIController.h"
+#include "ShooterCharacter.h"
+#include "Kismet/GameplayStatics.h"
 
 void AKillEmAllGameMode::PawnKilled(APawn* PawnKilled)
 {
@@ -27,7 +29,21 @@ void AKillEmAllGameMode::PawnKilled(APawn* PawnKilled)
 		}
 	}
 	//if all AIShooters are dead then Player win
-	EndGame(true);
+	AllEnemiesDead = true;
+	AShooterCharacter* ShooterPlayer = Cast<AShooterCharacter>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+	if (ShooterPlayer)
+	{
+		UE_LOG(LogTemp, Display, TEXT("Nueva mision"));
+		ShooterPlayer->NewMision(TEXT("2"));
+	}
+	else {
+		UE_LOG(LogTemp, Display, TEXT("No Nueva mision"));
+	}
+	/*if (YouWin)
+	{
+		UE_LOG(LogTemp, Display, TEXT("You Win"));
+		EndGame(true);
+	}	*/
 }
 
 

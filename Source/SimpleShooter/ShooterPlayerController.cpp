@@ -13,17 +13,17 @@ void AShooterPlayerController::BeginPlay()
 	Super::BeginPlay();
 
 	HUD = CreateWidget(this, HUDClass);
-	if (HUD != nullptr)
+	/*if (HUD != nullptr)
 	{
 		HUD->AddToViewport();
-	}
+	}*/
 }
 void AShooterPlayerController::GameHasEnded(class AActor *EndGameFocus, bool bIsWinner)
 {
 	Super::GameHasEnded(EndGameFocus, bIsWinner);
 	UE_LOG(LogTemp, Warning, TEXT("We have finished"));
 
-	HUD->RemoveFromViewport();
+	HUD->RemoveFromParent();
 	if (bIsWinner)
 	{
 		UUserWidget* WinScreen = CreateWidget(this, WinScreenClass);
@@ -31,6 +31,7 @@ void AShooterPlayerController::GameHasEnded(class AActor *EndGameFocus, bool bIs
 		{
 			WinScreen->AddToViewport();
 		}
+		//lanzar la cinemática.
 	}
 	else
 	{
