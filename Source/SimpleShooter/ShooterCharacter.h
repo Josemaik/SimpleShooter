@@ -61,6 +61,11 @@ public:
 	UFUNCTION(BlueprintPure)
 	AGun* GetCurrentGun();
 
+	UFUNCTION(BlueprintCallable)
+	void SetHiddenGun();
+	UFUNCTION(BlueprintCallable)
+	void SetVisibleGun();
+
 	UFUNCTION(BlueprintImplementableEvent)
 	void SwitchCam();
 

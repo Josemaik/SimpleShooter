@@ -26,7 +26,7 @@ void AShooterCharacter::BeginPlay()
 
 	Health = MaxHealth;
 	
-	GetMesh()->HideBoneByName(TEXT("weapon_r"), EPhysBodyOp::PBO_None);							
+	GetMesh()->HideBoneByName(TEXT("weapon_r"), EPhysBodyOp::PBO_None);	
 	PickUpGun(GetWorld()->SpawnActor<AGun>(GunClass));
 
 	//path
@@ -329,6 +329,13 @@ void AShooterCharacter::PickUpGun(AGun* gun)
 		PrimaryGun->Tags.Add("Active");
 		PrimaryGun->Tags.Add("Primary");
 	}
+}
+
+void AShooterCharacter::SetHiddenGun() {
+	PrimaryGun->SetHidden(true);
+}
+void AShooterCharacter::SetVisibleGun() {
+	PrimaryGun->SetHidden(false);
 }
 void AShooterCharacter::Interact()
 {
