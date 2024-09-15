@@ -39,6 +39,9 @@ public:
 	bool IsCrounch() const { return crounch; }
 
 	UFUNCTION(BlueprintPure)
+	bool IsAiming() const { return bisAiming; }
+
+	UFUNCTION(BlueprintPure)
 	bool GetSpawning() const { return spawning; }
 
 	void EndSpawnAnimation() { spawning = false; }
@@ -114,6 +117,9 @@ private:
 	void LookRightRate(float AxisValue);
 	void Crounch();
 
+	void Aiming();
+	void StopAiming();
+	bool bisAiming;
 	void Interact();
 	void PickUpGun(class AGun* gun);
 	void ManagePickGun(AGun* gun);

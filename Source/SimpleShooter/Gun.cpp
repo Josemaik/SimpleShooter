@@ -71,6 +71,10 @@ void AGun::PullTrigger()
 				FPointDamageEvent DamageEvent(Damage, Hit, ShotDirection, nullptr);
 				AController* OwnerController = GetOwnerController();
 				HitActor->TakeDamage(Damage, DamageEvent, OwnerController, this);
+				if (HitActor->ActorHasTag("Enemy"))
+				{
+					DrawDamageTaken(Damage);
+				}
 			}
 		}
 
@@ -83,6 +87,21 @@ void AGun::PullTrigger()
 	}
 }
 
+bool AGun::IsAimingEnemy()
+{
+	FHitResult Hit;
+	FVector ShotDirection;
+	bool bSuccess = GunTrace(Hit, ShotDirection);
+	if (bSuccess)
+	{
+		if (Hit.GetActor()->ActorHasTag("Enemy")) {
+
+			return true;
+		}
+		else return false;
+	}
+	return false;
+}
 bool AGun::GunTrace(FHitResult& Hit, FVector& ShotDirection)
 {
 	AController* OwnerController = GetOwnerController();

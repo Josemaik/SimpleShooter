@@ -18,6 +18,7 @@ public:
 	void PullTrigger();
 	void ReloadAmmo();
 	void DecreaseAmmo() { if(CurrentAmmo > 0) --CurrentAmmo; }
+	bool IsAimingEnemy();
 
 protected:
 	// Called when the game starts or when spawned
@@ -36,6 +37,13 @@ public:
 	UFUNCTION(BlueprintPure)
 	int GetReservedAmmo() const { return ReservedAmmo; }
 
+	UFUNCTION(BlueprintPure)
+	bool GetIsAmingEnemy() const { return bIsAimingEnemy; }
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void DrawDamageTaken(float damage);
+
+
 	void DestroySphereCollision(); 
 
 	bool CanbeCharged() const { return GetReservedAmmo() > 0; }
@@ -43,6 +51,8 @@ public:
 	void SetMaxAmmo(float maxamo) { MaxAmmo = CurrentAmmo = maxamo; }
 
 	void SetReservedAmmo(float newreservedammo) { ReservedAmmo = newreservedammo; }
+
+	void SetAiming(bool newIsAimingEnemy) { bIsAimingEnemy = newIsAimingEnemy; }
 private:
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* Root;
@@ -90,4 +100,6 @@ private:
 
 	bool GunTrace(FHitResult& Hit, FVector& ShotDirection);
 	AController* GetOwnerController() const;	
+
+	bool bIsAimingEnemy;
 };

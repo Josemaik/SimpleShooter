@@ -71,6 +71,32 @@ void AShooterCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	//tecla siendo mantenida
+	if (bisAiming)
+	{
+		if (PrimaryGun->ActorHasTag("Active"))
+		{
+			if (PrimaryGun->IsAimingEnemy())
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Estoy apuntando enemigo"));
+				PrimaryGun->SetAiming(true);
+			}
+			else {
+				UE_LOG(LogTemp, Warning, TEXT("Noooo Estoy apuntando enemigo"));
+				PrimaryGun->SetAiming(false);
+			}
+
+		}
+		else {
+			if (SecondaryGun->IsAimingEnemy())
+			{
+				SecondaryGun->SetAiming(true);
+			}
+			else {
+				SecondaryGun->SetAiming(false);
+			}
+		}
+	}
 }
 
 // Called to bind functionality to input
@@ -94,6 +120,8 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAction(TEXT("SwitchCamera"), EInputEvent::IE_Pressed, this, &AShooterCharacter::SwitchCam);
 	PlayerInputComponent->BindAction(TEXT("Heal"), EInputEvent::IE_Pressed, this, &AShooterCharacter::Heal);
 	PlayerInputComponent->BindAction(TEXT("Crounch"), EInputEvent::IE_Pressed, this, &AShooterCharacter::Crounch);
+	PlayerInputComponent->BindAction(TEXT("Aim"), EInputEvent::IE_Pressed, this, &AShooterCharacter::Aiming);
+	PlayerInputComponent->BindAction(TEXT("Aim"), EInputEvent::IE_Released, this, &AShooterCharacter::StopAiming);
 }
 
 //pc input mappings
@@ -131,7 +159,58 @@ AGun* AShooterCharacter::GetCurrentGun()
 	}
 	return SecondaryGun;
 }
+void AShooterCharacter::StopAiming()
+{
+	bisAiming = false;
+	if (PrimaryGun->ActorHasTag("Active"))
+	{
+		if (PrimaryGun->IsAimingEnemy())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Estoy apuntando enemigo"));
+			PrimaryGun->SetAiming(true);
+		}
+		else {
+			UE_LOG(LogTemp, Warning, TEXT("Noooo Estoy apuntando enemigo"));
+			PrimaryGun->SetAiming(false);
+		}
 
+	}
+	else {
+		if (SecondaryGun->IsAimingEnemy())
+		{
+			SecondaryGun->SetAiming(true);
+		}
+		else {
+			SecondaryGun->SetAiming(false);
+		}
+	}
+}
+void AShooterCharacter::Aiming()
+{
+	bisAiming = true;
+	if (PrimaryGun->ActorHasTag("Active"))
+	{
+		if (PrimaryGun->IsAimingEnemy())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Estoy apuntando enemigo"));
+			PrimaryGun->SetAiming(true);
+		}
+		else {
+			UE_LOG(LogTemp, Warning, TEXT("Noooo Estoy apuntando enemigo"));
+			PrimaryGun->SetAiming(false);
+		}
+
+	}
+	else {
+		if (SecondaryGun->IsAimingEnemy())
+		{
+			SecondaryGun->SetAiming(true);
+		}
+		else {
+			SecondaryGun->SetAiming(false);
+		}
+	}
+}
 void AShooterCharacter::Heal()
 {
 	// Vida que se va a curar en total
