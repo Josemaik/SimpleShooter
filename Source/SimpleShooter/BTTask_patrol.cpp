@@ -54,7 +54,7 @@ EBTNodeResult::Type UBTTask_patrol::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 			nextposindex = 0;
 		}
 
-		return EBTNodeResult::Failed;
+		return EBTNodeResult::Succeeded;
 	}
 	/*ShooterCharacter->move*/
 	//Dont shoot when player is far away

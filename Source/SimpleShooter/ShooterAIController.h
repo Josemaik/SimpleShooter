@@ -16,7 +16,6 @@ class SIMPLESHOOTER_API AShooterAIController : public AAIController
 public:
 	virtual void Tick(float DeltaSeconds);
 	bool IsDead() const;
-
 protected:
 	virtual void BeginPlay() override;
 private:
@@ -24,8 +23,8 @@ private:
 	//APawn* PlayePawn;
 	class AShooterCharacter* PlayerPawn;
 	//detection radius
-	//UPROPERTY(EditAnywhere)
-	//float AcceptanceRadius = 200;
+	UPROPERTY(EditAnywhere)
+	float AcceptanceRadius = 1000;
 	UPROPERTY(EditDefaultsOnly)
 	class UBehaviorTree* AIBehavior;
 };

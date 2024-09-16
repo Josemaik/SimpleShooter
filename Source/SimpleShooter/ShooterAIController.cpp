@@ -26,6 +26,8 @@ void AShooterAIController::BeginPlay()
 		GetBlackboardComponent()->SetValueAsFloat(TEXT("PatrolVelocity"), 100);
 		//sel initial
 		GetBlackboardComponent()->SetValueAsVector(TEXT("NexPathPosition"), GetPawn()->GetActorLocation());
+		//set max radius
+		GetBlackboardComponent()->SetValueAsFloat(TEXT("MaxRadius"), AcceptanceRadius);
 	}
 }
 
