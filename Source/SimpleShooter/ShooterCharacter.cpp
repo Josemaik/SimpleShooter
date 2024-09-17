@@ -187,6 +187,8 @@ void AShooterCharacter::StopAiming()
 }
 void AShooterCharacter::Aiming()
 {
+	//Sound Aim
+	UGameplayStatics::SpawnSoundAtLocation(GetWorld(), AimingSound, GetActorLocation());
 	bisAiming = true;
 	if (PrimaryGun->ActorHasTag("Active"))
 	{
@@ -213,6 +215,8 @@ void AShooterCharacter::Aiming()
 }
 void AShooterCharacter::Heal()
 {
+	//Heal Sound
+	UGameplayStatics::SpawnSoundAtLocation(GetWorld(), HealingSound, GetActorLocation());
 	// Vida que se va a curar en total
 	if (currentpotion < MaxCurePotions && Health < MaxHealth)
 	{
@@ -321,6 +325,8 @@ float AShooterCharacter::TakeDamage(float DamageAmount, struct FDamageEvent cons
 		ASimpleShooterGameModeBase* GameMode = GetWorld()->GetAuthGameMode<ASimpleShooterGameModeBase>();
 		if(GameMode != nullptr)
 		{
+			//Dead Sound
+			UGameplayStatics::SpawnSoundAtLocation(GetWorld(), DeadSound, GetActorLocation());
 			GameMode->PawnKilled(this);
 		}
 		if (!this->ActorHasTag("Player"))
@@ -429,7 +435,7 @@ void AShooterCharacter::Interact()
 		if (InteractableActor->ActorHasTag("ShotGun"))
 		{
 			AGun* ShotGun = Cast<AGun>(InteractableActor);
-			
+			UGameplayStatics::SpawnSoundAtLocation(GetWorld(), PickUpSound, GetActorLocation());
 			PickUpGun(ShotGun);
 		}
 		if (InteractableActor->ActorHasTag("PassDoor"))

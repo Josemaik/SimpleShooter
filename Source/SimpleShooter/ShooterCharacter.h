@@ -107,6 +107,8 @@ public:
 
 
 	void RespawnCheckpoint();
+	UFUNCTION(BlueprintCallable)
+	void SetCurrentCheckpoint(FTransform newcheckpoint) { CurrentCheckpoint = newcheckpoint; }
 
 	UPROPERTY(BlueprintReadWrite)
 	FTransform CurrentCheckpoint;
@@ -185,4 +187,14 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	TArray<FVector> Path;
+
+	UPROPERTY(EditAnywhere)
+	USoundBase* DeadSound;
+
+	UPROPERTY(EditAnywhere)
+	USoundBase* HealingSound;
+	UPROPERTY(EditAnywhere)
+	USoundBase* AimingSound;
+	UPROPERTY(EditAnywhere)
+	USoundBase* PickUpSound;
 };

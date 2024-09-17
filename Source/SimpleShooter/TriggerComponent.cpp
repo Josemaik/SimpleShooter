@@ -33,7 +33,9 @@ void UTriggerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 		AActor* Actor = GetAcceptableActor();
 		if (Actor != nullptr)
 		{
+			//door open sound
 			Mover->SetShouldMove(true);
+			//UGameplayStatics::SpawnSoundAtLocation(GetWorld(), OpenSound, GetComponentLocation());
 		}
 	}
 		break;
@@ -50,7 +52,10 @@ void UTriggerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 		AShooterCharacter* Player = Cast<AShooterCharacter>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 		if (Player && Player->IsPasswordCorrect())
 		{
+			//Door open sound
 			Mover->SetShouldMove(true);
+			UGameplayStatics::SpawnSoundAtLocation(GetWorld(), OpenSound, GetComponentLocation());
+			Player->SetPassword(false);
 		}
 	}
 		break;

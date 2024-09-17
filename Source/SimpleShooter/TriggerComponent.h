@@ -47,4 +47,7 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	EnumTriggerType TriggerType;
+
+	UPROPERTY(EditAnywhere)
+	USoundBase* OpenSound;
 };
