@@ -41,6 +41,9 @@ void AShooterPlayerController::GameHasEnded(class AActor *EndGameFocus, bool bIs
 			LoseScreen->AddToViewport();
 		}
 		DisableInput(this);
+		//active kill camera
+		AShooterCharacter* ShooterPlayer = Cast<AShooterCharacter>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+		ShooterPlayer->HandleKillCamera(true);
 		GetWorldTimerManager().SetTimer(RestartTimer, this, &AShooterPlayerController::Respawn,RestartDelay);
 	}
 }
@@ -48,8 +51,12 @@ void AShooterPlayerController::GameHasEnded(class AActor *EndGameFocus, bool bIs
 void AShooterPlayerController::Respawn()
 {
 	UE_LOG(LogTemp, Display, TEXT("Respawneando"));
-	LoseScreen->RemoveFromParent();
+	//Get player
 	AShooterCharacter* ShooterPlayer = Cast<AShooterCharacter>(UGameplayStatics::GetPlayerPawn(GetWorld(),0));
+	//deactive kill camera
+	ShooterPlayer->HandleKillCamera(false);
+
+	LoseScreen->RemoveFromParent();
 	if (ShooterPlayer)
 	{
 		UE_LOG(LogTemp, Display, TEXT("Sigo vivo"));

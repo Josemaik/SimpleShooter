@@ -13,6 +13,10 @@ void AKillEmAllGameMode::PawnKilled(APawn* PawnKilled)
 	Super::PawnKilled(PawnKilled);
 	UE_LOG(LogTemp, Warning, TEXT("A pawn was killed"));
 
+	//Add dead tag if is enemy
+	if(PawnKilled->ActorHasTag("Enemy"))
+		PawnKilled->Tags.Add(TEXT("Dead"));
+
 	//if Player is died then lose the game
 	APlayerController* PlayerController = Cast<APlayerController>(PawnKilled->GetController());
 	if (PlayerController != nullptr)

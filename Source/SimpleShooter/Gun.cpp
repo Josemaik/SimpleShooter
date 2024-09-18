@@ -71,7 +71,7 @@ void AGun::PullTrigger()
 				FPointDamageEvent DamageEvent(Damage, Hit, ShotDirection, nullptr);
 				AController* OwnerController = GetOwnerController();
 				HitActor->TakeDamage(Damage, DamageEvent, OwnerController, this);
-				if (HitActor->ActorHasTag("Enemy"))
+				if (HitActor->ActorHasTag("Enemy") && !Hit.GetActor()->ActorHasTag("Dead"))
 				{
 					DrawDamageTaken(Damage);
 				}
@@ -94,8 +94,7 @@ bool AGun::IsAimingEnemy()
 	bool bSuccess = GunTrace(Hit, ShotDirection);
 	if (bSuccess)
 	{
-		if (Hit.GetActor()->ActorHasTag("Enemy")) {
-
+		if (Hit.GetActor()->ActorHasTag("Enemy") && !Hit.GetActor()->ActorHasTag("Dead")) {
 			return true;
 		}
 		else return false;

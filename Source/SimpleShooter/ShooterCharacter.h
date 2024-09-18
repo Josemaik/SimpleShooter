@@ -112,6 +112,9 @@ public:
 
 	UPROPERTY(BlueprintReadWrite)
 	FTransform CurrentCheckpoint;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void HandleKillCamera(bool mode);
 private:
 	void MoveForward(float AxisValue);
 	void MoveRight(float AxisValue);
