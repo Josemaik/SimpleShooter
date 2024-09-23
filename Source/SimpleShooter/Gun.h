@@ -46,7 +46,7 @@ public:
 
 	void DestroySphereCollision(); 
 
-	bool CanbeCharged() const { return GetReservedAmmo() > 0; }
+	bool CanbeCharged() const { return GetReservedAmmo() > 0 && GetCurrentAmmo() < GetMaxAmmo(); }
 
 	void SetMaxAmmo(float maxamo) { MaxAmmo = CurrentAmmo = maxamo; }
 

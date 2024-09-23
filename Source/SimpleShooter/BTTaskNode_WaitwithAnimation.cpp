@@ -4,10 +4,13 @@
 #include "BTTaskNode_WaitwithAnimation.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "AIController.h"
+#include "ShooterAIController.h"
 
 UBTTaskNode_WaitwithAnimation::UBTTaskNode_WaitwithAnimation()
 {
 	NodeName = TEXT("Wait_and_Animate");
+	timerinit = false;
+	timerfinished = false;
 }
 
 EBTNodeResult::Type UBTTaskNode_WaitwithAnimation::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
@@ -20,20 +23,37 @@ EBTNodeResult::Type UBTTaskNode_WaitwithAnimation::ExecuteTask(UBehaviorTreeComp
 
 	if (!timerinit)
 	{
+		/*EBTNodeResult::Type hello;
 		FTimerHandle PlayerEnabledReload;
 		FTimerDelegate PlayerEnabledReloadDelegate;
 		PlayerEnabledReloadDelegate = FTimerDelegate::CreateUObject(
 			this,
-			&UBTTaskNode_WaitwithAnimation::Timer
+			&UBTTaskNode_WaitwithAnimation::Timer,
+			hello
+		);*/
+		// Configurar el temporizador para dispararse una vez después de 2 segundos
+		/*GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &UBTTaskNode_WaitwithAnimation::Timer(OwnerComp), 2.0f, false);*/
+		/*GetWorld()->GetTimerManager().SetTimer(PlayerEnabledReload, PlayerEnabledReloadDelegate, 2.0f, true);*/
+		// Pasar OwnerComp como parámetro
+		 // Crear un FTimerDelegate para pasar parámetros al Timer
+		FTimerDelegate TimerDelegate;
+		TimerDelegate.BindUObject(
+			this,
+			&UBTTaskNode_WaitwithAnimation::Timer,
+			&OwnerComp // Pasar OwnerComp como puntero
 		);
-		GetWorld()->GetTimerManager().SetTimer(PlayerEnabledReload, PlayerEnabledReloadDelegate, 6.0f, true);
 
+		// Configurar el temporizador para dispararse una vez después de 2 segundos
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, 2.0f, false); // Usar la variable miembro 'TimerHandle'
+
+		UE_LOG(LogTemp, Display, TEXT("Init Timer"));
 		timerinit = true;
 	}
 
 
 	if (!timerfinished)
 	{
+		UE_LOG(LogTemp, Display, TEXT("In Progress"));
 		return EBTNodeResult::InProgress;
 	}
 	else {
@@ -56,7 +76,19 @@ EBTNodeResult::Type UBTTaskNode_WaitwithAnimation::ExecuteTask(UBehaviorTreeComp
 	return EBTNodeResult::Failed;
 }
 
-void UBTTaskNode_WaitwithAnimation::Timer()
+void UBTTaskNode_WaitwithAnimation::Timer(UBehaviorTreeComponent* OwnerComp)
 {
-	timerfinished = true;
+	UE_LOG(LogTemp, Display, TEXT("Finish Timer"));
+	timerfinished = true;  // Marcar que el temporizador ha finalizado
+	AShooterAIController* aic = Cast<AShooterAIController>(OwnerComp->GetAIOwner());
+	aic->SetShootingMove(false);
+	// Notificar al Behavior Tree que la tarea ha fallado
+	/*UBehaviorTreeComponent* OwnerComp = Cast<UBehaviorTreeComponent>();*/
+	/*if (OwnerComp)
+	{*/
+	//OwnerComp->GetBlackboardComponent()->ClearValue(TEXT("HasShootorMoved"));
+	//OwnerComp->GetBlackboardComponent()->SetValueAsBool("HasShootorMoved", false);
+	FinishLatentTask(*OwnerComp, EBTNodeResult::Succeeded);
+	//FinishLatentAbort(*OwnerComp);
+	/*}*/
 }

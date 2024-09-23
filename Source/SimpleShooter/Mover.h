@@ -25,6 +25,9 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	void SetShouldMove(bool shouldmove);
+
+	UFUNCTION(BlueprintPure)
+	bool EndMove() const { return EndMoving; }
 private:
 	UPROPERTY(EditAnywhere)
 	FVector MoveOffset;
@@ -36,4 +39,6 @@ private:
 	bool ShouldMove = false;
 
 	FVector OriginalLocation;
+
+	bool EndMoving = false;
 };

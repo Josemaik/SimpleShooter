@@ -319,6 +319,7 @@ float AShooterCharacter::TakeDamage(float DamageAmount, struct FDamageEvent cons
 	DamagetoApply = FMath::Min(Health, DamagetoApply);
 	Health -= DamagetoApply;
 	UE_LOG(LogTemp, Display, TEXT("Health left: %f"), Health);
+	Takedamage();
 
 	if (IsDead() && !ActorHasTag("Dead"))
 	{
@@ -335,6 +336,7 @@ float AShooterCharacter::TakeDamage(float DamageAmount, struct FDamageEvent cons
 			GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 			DetachFromControllerPendingDestroy();
 		}
+
 		//if (PrimaryGun)
 		//{
 			/*PrimaryGun->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);

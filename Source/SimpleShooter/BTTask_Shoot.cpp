@@ -3,6 +3,7 @@
 
 #include "BTTask_Shoot.h"
 #include "AIController.h"
+#include "ShooterAIController.h"
 #include "ShooterCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
@@ -40,8 +41,11 @@ EBTNodeResult::Type UBTTask_Shoot::ExecuteTask(UBehaviorTreeComponent& OwnerComp
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Falloo"));
 		return EBTNodeResult::Failed;
-	}
-	UE_LOG(LogTemp, Warning, TEXT("Disparo"));*/
+	}*/
+	UE_LOG(LogTemp, Warning, TEXT("disparo"));
+	AShooterAIController* aic = Cast<AShooterAIController>(OwnerComp.GetAIOwner());
+	aic->SetShootingMove(true);
+	//OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("ShootMove"), true);
 	ShooterCharacter->Shoot();
 
 	return EBTNodeResult::Succeeded;

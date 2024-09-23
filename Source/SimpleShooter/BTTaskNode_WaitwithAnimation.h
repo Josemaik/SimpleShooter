@@ -15,9 +15,10 @@ class SIMPLESHOOTER_API UBTTaskNode_WaitwithAnimation : public UBTTaskNode
 	GENERATED_BODY()
 public:
 	UBTTaskNode_WaitwithAnimation();
-	void Timer();
+	void Timer(UBehaviorTreeComponent* OwnerComp);
 	bool timerfinished = false;
 	bool timerinit = false;
+	FTimerHandle TimerHandle;
 protected:
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 };

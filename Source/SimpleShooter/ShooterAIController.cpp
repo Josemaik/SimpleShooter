@@ -8,6 +8,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/Actor.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Gun.h"
 
 void AShooterAIController::BeginPlay()
 {
@@ -28,6 +29,8 @@ void AShooterAIController::BeginPlay()
 		GetBlackboardComponent()->SetValueAsVector(TEXT("NexPathPosition"), GetPawn()->GetActorLocation());
 		//set max radius
 		GetBlackboardComponent()->SetValueAsFloat(TEXT("MaxRadius"), AcceptanceRadius);
+
+		GetBlackboardComponent()->SetValueAsBool(TEXT("true"), true);		//true  //fal  //false //true
 	}
 }
 
@@ -55,11 +58,14 @@ void AShooterAIController::Tick(float DeltaSeconds)
 		//ClearFocus(EAIFocusPriority::Gameplay);
 		//StopMovement();
 	//}
+	// 
+
 	// Comprobar si el AI está en modo patrullaje
 	bool bIsPatrolling = GetBlackboardComponent()->GetValueAsBool(TEXT("IsPatroling"));
 	FString xd = bIsPatrolling ? "true" : "false";
 	//UE_LOG(LogTemp, Display, TEXT("Patroling:%s"),*xd);
 	AShooterCharacter* ShooterCharacter = Cast<AShooterCharacter>(GetPawn());
+
 	if (ShooterCharacter)
 	{
 		if (PlayerPawn->IsDead())
@@ -69,6 +75,10 @@ void AShooterAIController::Tick(float DeltaSeconds)
 		else {
 			GetBlackboardComponent()->SetValueAsBool(TEXT("IsPlayerDead"), true);
 		}
+
+		//set bullets
+		int currentbullets = ShooterCharacter->GetCurrentGun()->GetCurrentAmmo();
+		GetBlackboardComponent()->SetValueAsInt(TEXT("Bullets"), currentbullets);
 
 		if (bIsPatrolling)
 		{
@@ -87,6 +97,11 @@ void AShooterAIController::Tick(float DeltaSeconds)
 	}
 }
 
+void AShooterAIController::SetShootingMove(bool value)
+{
+	UE_LOG(LogTemp, Display, TEXT("SETEEEEEEEEEEEEEOOOOOOOOOOOOOO"));
+	GetBlackboardComponent()->SetValueAsBool(TEXT("ShootMove"), value);
+}
 bool AShooterAIController::IsDead() const
 {
 	AShooterCharacter* ControlledCharacter = Cast<AShooterCharacter>(GetPawn());

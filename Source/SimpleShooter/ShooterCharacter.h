@@ -58,6 +58,7 @@ public:
 	UFUNCTION(BlueprintPure)
 	float GetHealth() const { return Health; }
 
+
 	void SetHealth(float newhealth) { Health = newhealth; }
 
 
@@ -71,6 +72,10 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void SwitchCam();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void Takedamage();
+
 
 	UFUNCTION(BlueprintCallable)
 	void HabilitarInput();

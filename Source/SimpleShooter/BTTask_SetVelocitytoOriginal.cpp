@@ -3,6 +3,7 @@
 
 #include "BTTask_SetVelocitytoOriginal.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "ShooterAIController.h"
 
 UBTTask_SetVelocitytoOriginal::UBTTask_SetVelocitytoOriginal()
 {
@@ -15,6 +16,10 @@ EBTNodeResult::Type UBTTask_SetVelocitytoOriginal::ExecuteTask(UBehaviorTreeComp
 
 	//GetSelectedBlackboardKey()
 	OwnerComp.GetBlackboardComponent()->SetValueAsBool(GetSelectedBlackboardKey(),false);
+
+	/*OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("ShootMove"), true);*/
+	AShooterAIController* aic = Cast<AShooterAIController>(OwnerComp.GetAIOwner());
+	aic->SetShootingMove(true);
 
 	return EBTNodeResult::Succeeded;
 }
