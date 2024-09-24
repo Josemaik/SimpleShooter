@@ -58,6 +58,9 @@ public:
 	UFUNCTION(BlueprintPure)
 	float GetHealth() const { return Health; }
 
+	UFUNCTION(BlueprintPure)
+	bool IsMeleeAtack() const { return melee; }
+
 
 	void SetHealth(float newhealth) { Health = newhealth; }
 
@@ -126,6 +129,8 @@ private:
 	void LookUpRate(float AxisValue);
 	void LookRightRate(float AxisValue);
 	void Crounch();
+	void AttackMelee();
+	void EndAttackMelee();
 
 	void Aiming();
 	void StopAiming();
@@ -181,6 +186,8 @@ private:
 	bool spawning;
 
 	bool crounch;
+
+	bool melee = false;
 	//Panel de password
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UUserWidget> PassWordPanelClass;
@@ -205,4 +212,7 @@ private:
 	USoundBase* AimingSound;
 	UPROPERTY(EditAnywhere)
 	USoundBase* PickUpSound;
+
+	AGun* currentgun;
+
 };

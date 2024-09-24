@@ -16,7 +16,6 @@ AShooterCharacter::AShooterCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
 }
 
 // Called when the game starts or when spawned
@@ -122,6 +121,7 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAction(TEXT("Crounch"), EInputEvent::IE_Pressed, this, &AShooterCharacter::Crounch);
 	PlayerInputComponent->BindAction(TEXT("Aim"), EInputEvent::IE_Pressed, this, &AShooterCharacter::Aiming);
 	PlayerInputComponent->BindAction(TEXT("Aim"), EInputEvent::IE_Released, this, &AShooterCharacter::StopAiming);
+	PlayerInputComponent->BindAction(TEXT("Melee"), EInputEvent::IE_Pressed, this, &AShooterCharacter::AttackMelee);
 }
 
 //pc input mappings
@@ -271,6 +271,29 @@ void AShooterCharacter::Shoot()
 	}
 }
 
+void AShooterCharacter::AttackMelee()
+{
+	melee = true;
+	UE_LOG(LogTemp, Display, TEXT("Melee"));
+
+	if (currentgun != nullptr)
+	{
+		currentgun->ActiveMeleeCollision(true);
+		FTimerHandle MeleeHandle;
+		GetWorldTimerManager().SetTimer(MeleeHandle, this, &AShooterCharacter::EndAttackMelee, 1.2);
+	}
+}
+void AShooterCharacter::EndAttackMelee()
+{
+	UE_LOG(LogTemp, Display, TEXT("End Melee"));
+	if (currentgun != nullptr)
+	{
+		currentgun->ActiveMeleeCollision(false);
+	}
+	melee = false;
+
+}
+
 void AShooterCharacter::Reload()
 {
 	
@@ -397,6 +420,8 @@ void AShooterCharacter::PickUpGun(AGun* gun)
 		//add maxAmmo
 		SecondaryGun->SetMaxAmmo(6);
 		SecondaryGun->SetReservedAmmo(45);
+
+		currentgun = SecondaryGun;
 		//
 		FTimerHandle PlayerEnabledSwitch;
 		FTimerDelegate PlayerEnabledSwitchDelegate;
@@ -415,6 +440,7 @@ void AShooterCharacter::PickUpGun(AGun* gun)
 		PrimaryGun->SetOwner(this);
 		PrimaryGun->Tags.Add("Active");
 		PrimaryGun->Tags.Add("Primary");
+		currentgun = PrimaryGun;
 	}
 }
 
@@ -431,11 +457,14 @@ void AShooterCharacter::Interact()
 
 	if (Actors.Num() > 0)
 	{
+		UE_LOG(LogTemp, Display, TEXT("at least one actor"));
 		FString Name = Actors[0]->GetActorNameOrLabel();
+		UE_LOG(LogTemp, Display, TEXT("name: %s"),*Name);
 		AActor* InteractableActor = Actors[0];
 		//ShotGun
 		if (InteractableActor->ActorHasTag("ShotGun"))
 		{
+			UE_LOG(LogTemp, Display, TEXT("Pick gun shot"));
 			AGun* ShotGun = Cast<AGun>(InteractableActor);
 			UGameplayStatics::SpawnSoundAtLocation(GetWorld(), PickUpSound, GetActorLocation());
 			PickUpGun(ShotGun);
@@ -487,6 +516,8 @@ void AShooterCharacter::ManageSwithGun()
 		SecondaryGun->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("WeaponSocket"));
 		//Gun -> remove tag
 		PrimaryGun->Tags.Remove("Active");
+
+		currentgun = SecondaryGun;
 	}
 	else {
 		UE_LOG(LogTemp, Warning, TEXT("Escopeta a Rifle"));
@@ -494,6 +525,8 @@ void AShooterCharacter::ManageSwithGun()
 		SecondaryGun->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("secondaryGunSocket"));
 		//Gun -> add tag
 		PrimaryGun->Tags.Add("Active");
+
+		currentgun = PrimaryGun;
 	}
 }
 void AShooterCharacter::SwithGun()

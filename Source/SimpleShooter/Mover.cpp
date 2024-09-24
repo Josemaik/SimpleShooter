@@ -37,7 +37,7 @@ void UMover::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponent
 		TargetLocation = OriginalLocation + MoveOffset;
 		if (CurrentLocation == TargetLocation)
 		{
-			UE_LOG(LogTemp, Display, TEXT("TERMINEEE"));
+			//UE_LOG(LogTemp, Display, TEXT("TERMINEEE"));
 			EndMoving = true;
 		}
 	}

@@ -53,6 +53,8 @@ public:
 	void SetReservedAmmo(float newreservedammo) { ReservedAmmo = newreservedammo; }
 
 	void SetAiming(bool newIsAimingEnemy) { bIsAimingEnemy = newIsAimingEnemy; }
+
+	void ActiveMeleeCollision(bool mode); 
 private:
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* Root;
@@ -62,6 +64,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	class USphereComponent* SphereCollision;
+
+	UPROPERTY(VisibleAnywhere)
+	class UBoxComponent* MeleeCollision;
 
 	UPROPERTY(EditAnywhere)
 	UParticleSystem* MuzzleFlash;
@@ -78,6 +83,9 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	USoundBase* EmptyGunSound;
+
+	UPROPERTY(EditAnywhere)
+	USoundBase* MeleeImpactSound;
 
 	UPROPERTY(EditAnywhere)
 	float MaxRange = 1000;
@@ -102,4 +110,7 @@ private:
 	AController* GetOwnerController() const;	
 
 	bool bIsAimingEnemy;
+
+	bool bActiveMelee = false;
+
 };

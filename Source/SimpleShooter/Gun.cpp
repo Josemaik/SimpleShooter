@@ -4,6 +4,7 @@
 #include "Gun.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/SphereComponent.h"
+#include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
 #include "Engine/DamageEvents.h"
@@ -22,6 +23,12 @@ AGun::AGun()
 
 	SphereCollision = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere Collision"));
 	SphereCollision->SetupAttachment(Root);
+
+	MeleeCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("Melee Collision"));
+	MeleeCollision->SetupAttachment(Root);
+
+	MeleeCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
 }
 
 // Called when the game starts or when spawned
@@ -35,6 +42,36 @@ void AGun::BeginPlay()
 void AGun::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (bActiveMelee)
+	{
+		//check collisions with enemy
+		UE_LOG(LogTemp, Display, TEXT("MeleeActivooo"));
+		TArray<AActor*> OverlappingActors;
+		MeleeCollision->GetOverlappingActors(OverlappingActors);
+
+		for (AActor* Actor : OverlappingActors)
+		{
+			if (Actor && Actor->ActorHasTag("Enemy"))  // Suponiendo que "AEnemyClass" es la clase de tus enemigos
+			{
+				//impact sound
+				UGameplayStatics::SpawnSoundAttached(MeleeImpactSound, Mesh, TEXT("MuzzleFlashSocket"));
+
+				UE_LOG(LogTemp, Display, TEXT("Overlapping with: %s"), *Actor->GetName());
+				// Lógica para aplicar daño o interacción al enemigo
+				 // Crear un evento de daño simple
+				FDamageEvent DamageEvent;
+				AController* OwnerController = GetOwnerController();  // Asegúrate de implementar esta función correctamente
+
+				// Aplicar 100 de daño al actor que está overlapeando
+				Actor->TakeDamage(100.0f, DamageEvent, OwnerController, this);
+
+				DrawDamageTaken(100.0f);
+
+				break;
+			}
+		}
+	}
 
 }
 void AGun::DestroySphereCollision()
@@ -84,6 +121,17 @@ void AGun::PullTrigger()
 	else {
 		UE_LOG(LogTemp, Warning, TEXT("Sonido vacio"));
 		UGameplayStatics::SpawnSoundAttached(EmptyGunSound, Mesh, TEXT("MuzzleFlashSocket"));
+	}
+}
+void AGun::ActiveMeleeCollision(bool mode)
+{ 
+	bActiveMelee = mode; 
+	if (bActiveMelee)
+	{
+		MeleeCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	}
+	else {
+		MeleeCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
 }
 
