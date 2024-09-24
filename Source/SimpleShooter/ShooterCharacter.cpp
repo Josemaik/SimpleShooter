@@ -338,11 +338,15 @@ void AShooterCharacter::AddAmmo(AGun* gun)
 
 float AShooterCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
 {
+	//If has shell no get damage
 	float DamagetoApply = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-	DamagetoApply = FMath::Min(Health, DamagetoApply);
-	Health -= DamagetoApply;
-	UE_LOG(LogTemp, Display, TEXT("Health left: %f"), Health);
-	Takedamage();
+	if (!ActorHasTag(TEXT("Shell")))
+	{
+		DamagetoApply = FMath::Min(Health, DamagetoApply);
+		Health -= DamagetoApply;
+		UE_LOG(LogTemp, Display, TEXT("Health left: %f"), Health);
+		Takedamage();
+	}
 
 	if (IsDead() && !ActorHasTag("Dead"))
 	{

@@ -43,7 +43,7 @@ void AGun::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (bActiveMelee)
+	if (bActiveMelee && !MeleeHit)
 	{
 		//check collisions with enemy
 		UE_LOG(LogTemp, Display, TEXT("MeleeActivooo"));
@@ -52,10 +52,12 @@ void AGun::Tick(float DeltaTime)
 
 		for (AActor* Actor : OverlappingActors)
 		{
-			if (Actor && Actor->ActorHasTag("Enemy"))  // Suponiendo que "AEnemyClass" es la clase de tus enemigos
+			if (Actor && (Actor->ActorHasTag("Enemy") || Actor->ActorHasTag("Boss")))  // Suponiendo que "AEnemyClass" es la clase de tus enemigos
 			{
 				//impact sound
 				UGameplayStatics::SpawnSoundAttached(MeleeImpactSound, Mesh, TEXT("MuzzleFlashSocket"));
+
+				MeleeHit = true;
 
 				UE_LOG(LogTemp, Display, TEXT("Overlapping with: %s"), *Actor->GetName());
 				// Lógica para aplicar daño o interacción al enemigo
@@ -66,6 +68,7 @@ void AGun::Tick(float DeltaTime)
 				// Aplicar 100 de daño al actor que está overlapeando
 				Actor->TakeDamage(100.0f, DamageEvent, OwnerController, this);
 
+				UE_LOG(LogTemp, Display, TEXT("MeleeePegado"));
 				DrawDamageTaken(100.0f);
 
 				break;
@@ -108,7 +111,8 @@ void AGun::PullTrigger()
 				FPointDamageEvent DamageEvent(Damage, Hit, ShotDirection, nullptr);
 				AController* OwnerController = GetOwnerController();
 				HitActor->TakeDamage(Damage, DamageEvent, OwnerController, this);
-				if (HitActor->ActorHasTag("Enemy") && !Hit.GetActor()->ActorHasTag("Dead"))
+				if ((HitActor->ActorHasTag("Enemy") || HitActor->ActorHasTag("Boss")) 
+					&& !Hit.GetActor()->ActorHasTag("Dead"))
 				{
 					DrawDamageTaken(Damage);
 				}
@@ -131,6 +135,7 @@ void AGun::ActiveMeleeCollision(bool mode)
 		MeleeCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	}
 	else {
+		MeleeHit = false;
 		MeleeCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
 }
@@ -142,7 +147,8 @@ bool AGun::IsAimingEnemy()
 	bool bSuccess = GunTrace(Hit, ShotDirection);
 	if (bSuccess)
 	{
-		if (Hit.GetActor()->ActorHasTag("Enemy") && !Hit.GetActor()->ActorHasTag("Dead")) {
+		if ((Hit.GetActor()->ActorHasTag("Enemy") || Hit.GetActor()->ActorHasTag("Boss")) 
+			&& !Hit.GetActor()->ActorHasTag("Dead")) {
 			return true;
 		}
 		else return false;

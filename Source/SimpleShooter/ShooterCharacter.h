@@ -79,6 +79,9 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void Takedamage();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void ActiveShell();
+
 
 	UFUNCTION(BlueprintCallable)
 	void HabilitarInput();

@@ -19,7 +19,23 @@ void AShooterAIController::BeginPlay()
 	//run behavuourTree
 	if (AIBehavior != nullptr)
 	{
-		RunBehaviorTree(AIBehavior);
+		if (GetPawn()->ActorHasTag("Enemy"))
+		{
+			UE_LOG(LogTemp, Display, TEXT("IS ENEMY"));
+			RunBehaviorTree(AIBehavior);
+			//set max radius
+			GetBlackboardComponent()->SetValueAsFloat(TEXT("MaxRadius"), AcceptanceRadius);
+		}
+		else if (GetPawn()->ActorHasTag("Boss"))
+		{
+			UE_LOG(LogTemp, Display, TEXT("IS BOSS"));
+			RunBehaviorTree(AIBehavior_boss);
+
+			//set max radius
+			GetBlackboardComponent()->SetValueAsFloat(TEXT("MaxRadius"), 750.f);
+		}
+
+		
 		//set start location
 		GetBlackboardComponent()->SetValueAsVector(TEXT("StartLocation"), GetPawn()->GetActorLocation());
 		//Set velocity
@@ -27,8 +43,6 @@ void AShooterAIController::BeginPlay()
 		GetBlackboardComponent()->SetValueAsFloat(TEXT("PatrolVelocity"), 100);
 		//sel initial
 		GetBlackboardComponent()->SetValueAsVector(TEXT("NexPathPosition"), GetPawn()->GetActorLocation());
-		//set max radius
-		GetBlackboardComponent()->SetValueAsFloat(TEXT("MaxRadius"), AcceptanceRadius);
 
 		GetBlackboardComponent()->SetValueAsBool(TEXT("true"), true);		//true  //fal  //false //true
 	}

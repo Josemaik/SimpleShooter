@@ -28,4 +28,6 @@ private:
 	float AcceptanceRadius = 1000;
 	UPROPERTY(EditDefaultsOnly)
 	class UBehaviorTree* AIBehavior;
+	UPROPERTY(EditDefaultsOnly)
+	class UBehaviorTree* AIBehavior_boss;
 };

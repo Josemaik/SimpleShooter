@@ -112,5 +112,6 @@ private:
 	bool bIsAimingEnemy;
 
 	bool bActiveMelee = false;
+	bool MeleeHit = false;
 
 };
