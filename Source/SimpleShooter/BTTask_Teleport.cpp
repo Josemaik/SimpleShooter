@@ -51,20 +51,27 @@ EBTNodeResult::Type UBTTask_Teleport::ExecuteTask(UBehaviorTreeComponent& OwnerC
     FVector TeleportLocation;
     TeleportLocation.X = PlayerLocation.X + RandomDistance * FMath::Cos(RandomAngle);
     TeleportLocation.Y = PlayerLocation.Y + RandomDistance * FMath::Sin(RandomAngle);
-    TeleportLocation.Z = ControlledPawn->GetActorLocation().Z;
+    TeleportLocation.Z = ControlledPawn->GetActorLocation().Z + 50.f;
 
     // Validate location ( collisions )
-    /*FHitResult HitResult;
+    FHitResult HitResult;
     bool bTeleportSuccess = GetWorld()->SweepSingleByChannel(
         HitResult,
         TeleportLocation,
         TeleportLocation,
         FQuat::Identity,
         ECC_Visibility,
-        FCollisionShape::MakeSphere(1.0f) 
+        FCollisionShape::MakeSphere(100.0f) 
     );
+    if (bTeleportSuccess)
+    {
+        UE_LOG(LogTemp, Display, TEXT("Siuuuuuuuu"));
+    }
+    else {
+        UE_LOG(LogTemp, Display, TEXT("Mehhhhhhhh"));
+    }
 
-    if (!bTeleportSuccess)
+    /*if (!bTeleportSuccess)
     {
         return EBTNodeResult::Failed;
     }*/

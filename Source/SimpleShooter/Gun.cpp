@@ -28,7 +28,6 @@ AGun::AGun()
 	MeleeCollision->SetupAttachment(Root);
 
 	MeleeCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
 }
 
 // Called when the game starts or when spawned
@@ -66,10 +65,13 @@ void AGun::Tick(float DeltaTime)
 				AController* OwnerController = GetOwnerController();  // Asegúrate de implementar esta función correctamente
 
 				// Aplicar 100 de daño al actor que está overlapeando
-				Actor->TakeDamage(100.0f, DamageEvent, OwnerController, this);
+				if (!Actor->ActorHasTag(TEXT("Shell")))
+				{
+					Actor->TakeDamage(100.0f, DamageEvent, OwnerController, this);
 
-				UE_LOG(LogTemp, Display, TEXT("MeleeePegado"));
-				DrawDamageTaken(100.0f);
+					UE_LOG(LogTemp, Display, TEXT("MeleeePegado"));
+					DrawDamageTaken(100.0f);
+				}
 
 				break;
 			}
@@ -111,7 +113,8 @@ void AGun::PullTrigger()
 				FPointDamageEvent DamageEvent(Damage, Hit, ShotDirection, nullptr);
 				AController* OwnerController = GetOwnerController();
 				HitActor->TakeDamage(Damage, DamageEvent, OwnerController, this);
-				if ((HitActor->ActorHasTag("Enemy") || HitActor->ActorHasTag("Boss")) 
+				if ((HitActor->ActorHasTag("Enemy") || HitActor->ActorHasTag("Boss") && 
+					!HitActor->ActorHasTag(TEXT("Shell")))
 					&& !Hit.GetActor()->ActorHasTag("Dead"))
 				{
 					DrawDamageTaken(Damage);
@@ -132,9 +135,11 @@ void AGun::ActiveMeleeCollision(bool mode)
 	bActiveMelee = mode; 
 	if (bActiveMelee)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("COLLISION ENABLED"));
 		MeleeCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	}
 	else {
+		UE_LOG(LogTemp, Warning, TEXT("NO COLLISION"));
 		MeleeHit = false;
 		MeleeCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}

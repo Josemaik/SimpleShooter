@@ -27,7 +27,7 @@ void AShooterCharacter::BeginPlay()
 	
 	GetMesh()->HideBoneByName(TEXT("weapon_r"), EPhysBodyOp::PBO_None);	
 	PickUpGun(GetWorld()->SpawnActor<AGun>(GunClass));
-
+	currentgun->ActiveMeleeCollision(false);
 	//path
 	/*if (!Path_name.ToString().IsEmpty())
 	{
@@ -222,7 +222,7 @@ void AShooterCharacter::Heal()
 	{
 		healing = true;
 
-		TotalLifeToCure = 30;
+		TotalLifeToCure = 16;
 
 		DeleteCurePotion(currentpotion);
 		currentpotion++;
@@ -236,7 +236,11 @@ void AShooterCharacter::Heal()
 		GetWorldTimerManager().SetTimer(PlayerHealTimerHandle, PlayerHealDelegate, 0.5f, true);
 	}
 }
-
+void AShooterCharacter::MaxHealings()
+{
+	currentpotion = 0;
+	GetMaxPotions();
+}
 void AShooterCharacter::HealStep()
 {
 	// Define cuánta vida vas a curar por tick

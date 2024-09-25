@@ -14,7 +14,7 @@ void AKillEmAllGameMode::PawnKilled(APawn* PawnKilled)
 	UE_LOG(LogTemp, Warning, TEXT("A pawn was killed"));
 
 	//Add dead tag if is enemy
-	if(PawnKilled->ActorHasTag("Enemy"))
+	if(PawnKilled->ActorHasTag("Enemy") || PawnKilled->ActorHasTag("Boss"))
 		PawnKilled->Tags.Add(TEXT("Dead"));
 
 	//if Player is died then lose the game
@@ -34,15 +34,15 @@ void AKillEmAllGameMode::PawnKilled(APawn* PawnKilled)
 	}
 	//if all AIShooters are dead then Player win
 	AllEnemiesDead = true;
-	AShooterCharacter* ShooterPlayer = Cast<AShooterCharacter>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+	/*AShooterCharacter* ShooterPlayer = Cast<AShooterCharacter>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 	if (ShooterPlayer)
 	{
 		UE_LOG(LogTemp, Display, TEXT("Nueva mision"));
-		ShooterPlayer->NewMision(TEXT("2"));
+		ShooterPlayer->NewMision(TEXT("3"));
 	}
 	else {
 		UE_LOG(LogTemp, Display, TEXT("No Nueva mision"));
-	}
+	}*/
 	/*if (YouWin)
 	{
 		UE_LOG(LogTemp, Display, TEXT("You Win"));

@@ -112,6 +112,8 @@ public:
 	void AddAmmo(class AGun* gun);
 	UFUNCTION(BlueprintImplementableEvent)
 	void DeleteCurePotion(int newcurrentpotion);
+	UFUNCTION(BlueprintImplementableEvent)
+	void GetMaxPotions();
 
 	UFUNCTION(BlueprintImplementableEvent,BlueprintCallable)
 	void NewMision(FName newcurrentpotion);
@@ -126,6 +128,8 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void HandleKillCamera(bool mode);
+	UFUNCTION(BlueprintCallable)
+	void MaxHealings();
 private:
 	void MoveForward(float AxisValue);
 	void MoveRight(float AxisValue);
@@ -145,7 +149,7 @@ private:
 	void ManageSwithGun();
 	void Heal();
 	void HealStep();
-	void AddLife() { ++Health; }
+	void AddLife() { Health+=2; }
 
 	
 

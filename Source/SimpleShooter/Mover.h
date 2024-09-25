@@ -28,6 +28,9 @@ public:
 
 	UFUNCTION(BlueprintPure)
 	bool EndMove() const { return EndMoving; }
+
+	UFUNCTION(BlueprintPure)
+	FVector GetOriginalLocation() const { return OriginalLocation; }
 private:
 	UPROPERTY(EditAnywhere)
 	FVector MoveOffset;
