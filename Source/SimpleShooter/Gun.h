@@ -55,6 +55,8 @@ public:
 	void SetAiming(bool newIsAimingEnemy) { bIsAimingEnemy = newIsAimingEnemy; }
 
 	void ActiveMeleeCollision(bool mode); 
+
+	void Drop(USkeletalMeshComponent* playerMesh);
 private:
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* Root;

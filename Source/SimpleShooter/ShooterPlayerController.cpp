@@ -61,9 +61,9 @@ void AShooterPlayerController::Respawn()
 	{
 		UE_LOG(LogTemp, Display, TEXT("Sigo vivo"));
 		ShooterPlayer->SetHealth(100);
+		HUD->AddToViewport();
 		ShooterPlayer->RespawnCheckpoint();
 		EnableInput(this);
-		HUD->AddToViewport();
 
 		TArray<AActor*>FindActor;
 		UGameplayStatics::GetAllActorsWithTag(GetWorld(), TEXT("Elevator"), FindActor);

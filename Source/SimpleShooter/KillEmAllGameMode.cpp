@@ -17,6 +17,15 @@ void AKillEmAllGameMode::PawnKilled(APawn* PawnKilled)
 	if(PawnKilled->ActorHasTag("Enemy") || PawnKilled->ActorHasTag("Boss"))
 		PawnKilled->Tags.Add(TEXT("Dead"));
 
+	//Drop Gun
+	AShooterCharacter* shooterplayer = Cast<AShooterCharacter>(PawnKilled);
+	if (shooterplayer)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Suelto el arma"));
+		shooterplayer->DropGun();
+	}
+
+
 	//if Player is died then lose the game
 	APlayerController* PlayerController = Cast<APlayerController>(PawnKilled->GetController());
 	if (PlayerController != nullptr)
@@ -34,12 +43,7 @@ void AKillEmAllGameMode::PawnKilled(APawn* PawnKilled)
 	}
 	//if all AIShooters are dead then Player win
 	AllEnemiesDead = true;
-	/*AShooterCharacter* ShooterPlayer = Cast<AShooterCharacter>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
-	if (ShooterPlayer)
-	{
-		UE_LOG(LogTemp, Display, TEXT("Nueva mision"));
-		ShooterPlayer->NewMision(TEXT("3"));
-	}
+	/*
 	else {
 		UE_LOG(LogTemp, Display, TEXT("No Nueva mision"));
 	}*/

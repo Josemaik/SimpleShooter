@@ -145,6 +145,32 @@ void AGun::ActiveMeleeCollision(bool mode)
 	}
 }
 
+
+void AGun::Drop(USkeletalMeshComponent* playerMesh)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Drop el arma"));
+	if (MeleeCollision != nullptr)
+	{
+		/*MeleeCollision->DestroyComponent();*/
+		/*MeleeCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);*/
+		MeleeCollision->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+		MeleeCollision->SetSimulatePhysics(true);
+	}
+	else {
+		UE_LOG(LogTemp, Warning, TEXT("MeleeCollision es nullptr"));
+	}
+	Mesh->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	Mesh->SetSimulatePhysics(true);
+	/*if (SphereCollision != nullptr)
+	{
+		SphereCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
+	else {
+		UE_LOG(LogTemp, Warning, TEXT("SphereCollision es nullptr"));
+	}*/
+	//SetActorLocation(playerMesh->GetSocketLocation(TEXT("WeaponSocket")));
+	//SetActorRotation(playerMesh->GetSocketRotation(TEXT("WeaponSocket")));
+}
 bool AGun::IsAimingEnemy()
 {
 	FHitResult Hit;

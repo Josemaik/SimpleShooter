@@ -116,7 +116,7 @@ public:
 	void GetMaxPotions();
 
 	UFUNCTION(BlueprintImplementableEvent,BlueprintCallable)
-	void NewMision(FName newcurrentpotion);
+	void NewMision(int newmission);
 
 
 	void RespawnCheckpoint();
@@ -130,6 +130,15 @@ public:
 	void HandleKillCamera(bool mode);
 	UFUNCTION(BlueprintCallable)
 	void MaxHealings();
+
+	void DropGun();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Drop Gun")
+	TSubclassOf<AActor> RifleBlueprint;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Drop Gun")
+	TSubclassOf<AActor> LauncherBlueprint;
+
 private:
 	void MoveForward(float AxisValue);
 	void MoveRight(float AxisValue);

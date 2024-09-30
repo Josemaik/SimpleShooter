@@ -19,6 +19,10 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	bool AllEnemiesDead = false;
 
+	int getCurrentMission() const { return currentmission; }
+	UPROPERTY(BlueprintReadWrite)
+	int currentmission;
+
 private:
 
 	UFUNCTION(BlueprintCallable)

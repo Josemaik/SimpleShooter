@@ -11,6 +11,7 @@
 #include "ShooterPlayerController.h"
 #include "Path.h"
 #include "Components/SphereComponent.h"
+#include "KillEmAllGameMode.h"
 // Sets default values
 AShooterCharacter::AShooterCharacter()
 {
@@ -215,11 +216,12 @@ void AShooterCharacter::Aiming()
 }
 void AShooterCharacter::Heal()
 {
-	//Heal Sound
-	UGameplayStatics::SpawnSoundAtLocation(GetWorld(), HealingSound, GetActorLocation());
 	// Vida que se va a curar en total
 	if (currentpotion < MaxCurePotions && Health < MaxHealth)
 	{
+		//Heal Sound
+		UGameplayStatics::SpawnSoundAtLocation(GetWorld(), HealingSound, GetActorLocation());
+
 		healing = true;
 
 		TotalLifeToCure = 16;
@@ -247,9 +249,10 @@ void AShooterCharacter::HealStep()
 	int32 LifePerTick = 1;
 
 	// Si el jugador está completamente curado o ya curamos todo el LifeToCure
-	if (Health >= 100 || TotalLifeToCure <= 0)
+	if (Health >= 100 || TotalLifeToCure <= 0 || Health <= 0)
 	{
-		// Limpiar el temporizador cuando termine la curación
+		// Limpiar el temporizador cuando termine la curación, estoy al máximo de vida
+		// o me han matado
 		GetWorldTimerManager().ClearTimer(PlayerHealTimerHandle);
 		healing = false;
 		return;
@@ -296,6 +299,36 @@ void AShooterCharacter::EndAttackMelee()
 	}
 	melee = false;
 
+}
+
+void  AShooterCharacter::DropGun()
+{
+	currentgun->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
+	currentgun->SetActorLocation(FVector(0.0f,0.0f,0.0f));
+
+	//checkear si current gun tiene etiqueta rifle o shotgun
+	if (currentgun->ActorHasTag(TEXT("Rifle")))
+	{
+		if (RifleBlueprint)
+		{
+			AActor* SpawnedActor = GetWorld()->SpawnActor<AActor>(RifleBlueprint,
+				GetMesh()->GetSocketLocation(TEXT("WeaponSocket")),
+				FRotator(0.0f, 0.0f, 0.0f)
+			);
+		}
+	}
+	else {
+		if (LauncherBlueprint)
+		{
+			AActor* SpawnedActor = GetWorld()->SpawnActor<AActor>(LauncherBlueprint,
+				GetMesh()->GetSocketLocation(TEXT("WeaponSocket")),
+				FRotator(0.0f, 0.0f, 0.0f)
+			);
+		}
+	}
+	//currentgun->SetActorRotation(GetMesh()->GetSocketRotation(TEXT("None")));
+	///*currentgun->*/
+	//currentgun->Drop(GetMesh());
 }
 
 void AShooterCharacter::Reload()
@@ -558,6 +591,16 @@ void AShooterCharacter::RespawnCheckpoint()
 
 	// Aplica la rotación deseada al transform del checkpoint
 	//CurrentCheckpoint.SetRotation(DesiredRotation.Quaternion());
+	GetMaxPotions();
+
+	currentgun->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("WeaponSocket"));
+
+	AKillEmAllGameMode* GameMode = Cast<AKillEmAllGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+	if (GameMode != nullptr)
+	{
+		UE_LOG(LogTemp, Display, TEXT("Nueva mision tras reaparecer: %i"), GameMode->getCurrentMission());
+		NewMision(GameMode->getCurrentMission());
+	}
 
 	UE_LOG(LogTemp, Warning, TEXT("Checkpoint Transform: %s"), *CurrentCheckpoint.ToString());
 	SetActorTransform(CurrentCheckpoint);
