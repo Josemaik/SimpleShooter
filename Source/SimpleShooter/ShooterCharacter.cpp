@@ -222,7 +222,13 @@ void AShooterCharacter::Heal()
 		//Heal Sound
 		UGameplayStatics::SpawnSoundAtLocation(GetWorld(), HealingSound, GetActorLocation());
 
-		healing = true;
+		if (healing)
+		{
+			++accumulatepotions;
+		}
+		else {
+			healing = true;
+		}
 
 		TotalLifeToCure = 16;
 
@@ -255,11 +261,18 @@ void AShooterCharacter::HealStep()
 		// o me han matado
 		GetWorldTimerManager().ClearTimer(PlayerHealTimerHandle);
 		healing = false;
+		accumulatepotions = 0;
 		return;
 	}
 
 	// Curar al jugador
-	AddLife();
+	if (accumulatepotions > 0 && (Health + 4 < MaxHealth))
+	{
+		AddLife(4);
+	}
+	else {
+		AddLife(2);
+	}
 
 	// Restar la cantidad curada de la cantidad total a curar
 	TotalLifeToCure -= LifePerTick;
@@ -303,6 +316,7 @@ void AShooterCharacter::EndAttackMelee()
 
 void  AShooterCharacter::DropGun()
 {
+	UE_LOG(LogTemp, Display, TEXT("dropGun xddddddd"));
 	currentgun->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
 	currentgun->SetActorLocation(FVector(0.0f,0.0f,0.0f));
 
@@ -463,6 +477,9 @@ void AShooterCharacter::PickUpGun(AGun* gun)
 		SecondaryGun->SetReservedAmmo(45);
 
 		currentgun = SecondaryGun;
+		currentgun->Tags.Remove("ShotGun");
+		currentgun->ActiveMeleeCollision(false);
+		//currentgun->SetActorEnableCollision(false);
 		//
 		FTimerHandle PlayerEnabledSwitch;
 		FTimerDelegate PlayerEnabledSwitchDelegate;

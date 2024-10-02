@@ -158,7 +158,7 @@ private:
 	void ManageSwithGun();
 	void Heal();
 	void HealStep();
-	void AddLife() { Health+=2; }
+	void AddLife(int quantity) { Health+= quantity; }
 
 	
 
@@ -175,6 +175,7 @@ private:
 	int TotalLifeToCure = 30;
 	int MaxCurePotions = 3;
 	int currentpotion = 0;
+	int accumulatepotions = 0;
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AGun> GunClass;
