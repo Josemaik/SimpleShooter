@@ -1,5 +1,5 @@
 # Unexpected Mission
-## Sci-Fi Shooter prototype made in Unreal Engine 5.1 based in NOVA 3.
+Sci-Fi Shooter prototype made in Unreal Engine 5.1 based in NOVA 3.
 
 Link to YT Video!👇
 
